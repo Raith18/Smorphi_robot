@@ -53,7 +53,8 @@ can be validated against ground truth and compared with published results.
 | **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ✅ **Done** |
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ✅ **Done** |
 | **8** | Performance Benchmarking · Profiling · Optimization | ✅ **Done** |
-| **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Next |
+| **9** | Docker · CI/CD · Unit Testing · Integration Testing | ✅ **Done** |
+| **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Next |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Pending |
 | **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Pending |
 
@@ -127,6 +128,14 @@ rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase6_mapping.rviz
 #   - semantic map (RGB8 cloud): the world colored by class, growing live
 #   - dynamic obstacle trajectories (green->red = increasing collision risk)
 # CPU tip: with_perception:=false keeps grid + LiDAR mapping without YOLO.
+```
+
+### Phase 9 quick demo — verify everything in one command
+
+```bash
+bash scripts/verify_all.sh          # shell + compile + XML/YAML + 180 unit tests
+                                    # + integration test + all smoke tests + profiler
+# CI: pushed to GitHub, .github/workflows/ci.yml runs the same checks per commit
 ```
 
 ---
