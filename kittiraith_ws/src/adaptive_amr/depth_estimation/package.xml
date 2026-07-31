@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>depth_estimation</name>
+  <version>0.1.0</version>
+  <description>
+    Depth estimation node: converts the sparse LiDAR depth image
+    (/fusion/sparse_depth) into a dense depth map using the classic
+    nearest-valid-pixel fill (Euclidean distance transform) plus optional
+    smoothing. Publishes /depth/dense and /depth/colored. CPU-friendly.
+  </description>
+  <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+</package>

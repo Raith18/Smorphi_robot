@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    depth_estimation.launch — sparse-to-dense depth completion node.
+
+    Usage:
+      roslaunch depth_estimation depth_estimation.launch
+  -->
+  <node name="depth_estimation_node" pkg="depth_estimation"
+        type="depth_estimation_node.py" output="screen">
+    <rosparam file="$(find depth_estimation)/config/depth_estimation.yaml"
+              command="load"/>
+  </node>
+</launch>

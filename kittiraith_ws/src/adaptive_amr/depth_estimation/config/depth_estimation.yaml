@@ -1,0 +1,7 @@
+# depth_estimation — private parameters (loaded by depth_estimation.launch)
+input_topic: /fusion/sparse_depth
+output_ns: /depth
+max_fill_distance: 0        # max fill radius [px]; 0 = unlimited
+smooth_sigma: 2.0           # Gaussian sigma [px]; 0 = no smoothing
+visualize_max_depth: 80.0   # m mapped to the bright end of the color scale
+diagnostics_rate: 1.0
