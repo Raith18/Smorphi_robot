@@ -50,8 +50,8 @@ can be validated against ground truth and compared with published results.
 | **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ✅ **Done** |
 | **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ✅ **Done** |
 | **5** | Visual Odometry · LiDAR Odometry · ICP Localization | ✅ **Done** |
-| **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Next |
-| **7** | Navigation Layer · Behavior Layer · Decision Layer | ⏳ Pending |
+| **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ✅ **Done** |
+| **7** | Navigation Layer · Behavior Layer · Decision Layer | ⏳ Next |
 | **8** | Performance Benchmarking · Profiling · Optimization | ⏳ Pending |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Pending |
 | **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Pending |
@@ -113,6 +113,19 @@ rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase5_odometry.rviz
 #   - grey map = /localization/map growing during mapping
 #   - red pose arrow = /localization_pose (ICP scan-to-map, no EKF)
 #   - TF tree: map -> odom -> base_link fully dynamic
+```
+
+### Phase 6 quick demo
+
+```bash
+roslaunch adaptive_amr phase6_mapping.launch rate:=0.5   # full stack
+# new terminal:
+rostopic hz /occupancy_grid /semantic_map /dynamic_obstacles
+rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase6_mapping.rviz
+#   - occupancy grid (nav_msgs/OccupancyGrid): walls 70-100, free 0-40
+#   - semantic map (RGB8 cloud): the world colored by class, growing live
+#   - dynamic obstacle trajectories (green->red = increasing collision risk)
+# CPU tip: with_perception:=false keeps grid + LiDAR mapping without YOLO.
 ```
 
 ---

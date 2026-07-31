@@ -1,0 +1,92 @@
+# =============================================================================
+# phase6_mapping.rviz — Phase 6 mapping & prediction visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase6_mapping.rviz
+# Shows: occupancy grid (Map), semantic map cloud, dynamic obstacle
+# trajectories, TF.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Show Arrows: true
+
+    - Class: rviz/Map
+      Name: Occupancy grid
+      Enabled: true
+      Topic: /occupancy_grid
+      Color Scheme: map
+      Alpha: 0.7
+
+    - Class: rviz/PointCloud2
+      Name: Semantic map
+      Enabled: true
+      Topic: /semantic_map
+      Style: Points
+      Size (Pixels): 3
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: Semantic colored points (live)
+      Enabled: false
+      Topic: /semantic_map/colored_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+    - Class: rviz/MarkerArray
+      Name: Predicted trajectories
+      Enabled: true
+      Topic: /dynamic_obstacles/markers
+
+    - Class: rviz/Path
+      Name: LiDAR odometry path
+      Enabled: true
+      Topic: /lidar_odometry/path
+      Color: 0; 255; 0
+      Line Style: Lines
+      Line Width: 0.05
+
+    - Class: rviz/PoseWithCovariance
+      Name: Localization pose
+      Enabled: true
+      Topic: /localization_pose
+      Color: 255; 85; 85
+      Show Axes: true
+      Axes Length: 2.0
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 50
+      Focal Point: [0, 0, 0]
+      Pitch: 0.9
+      Yaw: -0.5
+      Target Frame: map

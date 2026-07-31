@@ -1,0 +1,64 @@
+<launch>
+  <!--
+    phase6_mapping.launch — Phase 6 mapping & prediction stack.
+
+    Starts (on top of phase3 pipelines + phase5 odometry/localization):
+      semantic_mapping   -> /semantic_map (global colored voxel map)
+      occupancy_grid     -> /occupancy_grid (log-odds grid)
+      motion_prediction  -> /dynamic_obstacles (predicted trajectories)
+      (optional) Phase 4 perception: detection + tracking + segmentation
+      + depth — the sources for semantic colors and object tracks.
+
+    Usage:
+      roslaunch adaptive_amr phase6_mapping.launch
+      roslaunch adaptive_amr phase6_mapping.launch rate:=0
+      roslaunch adaptive_amr phase6_mapping.launch with_perception:=false
+      roslaunch adaptive_amr phase6_mapping.launch \
+          dataset_root:=$(pwd)/data/kitti
+
+    Notes:
+      * with_perception:=true (default) enables YOLOv8 detection/tracking/
+        segmentation — needed for /dynamic_obstacles and the semantic map.
+        If your CPU struggles, use with_perception:=false (occupancy grid and
+        LiDAR map still work) and rate:=0.5.
+      * Occupancy grid + semantic map use /localization_pose by default;
+        set use_localization:=false on those nodes to use /lidar_odometry.
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="sync_type" default="exact"/>
+  <arg name="with_perception" default="true"/>
+
+  <!-- Phase 3: sensors + camera/lidar processing + fusion -->
+  <include file="$(find adaptive_amr)/launch/phase3_pipelines.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+
+  <!-- Phase 5: LiDAR odometry + ICP localization -->
+  <include file="$(find lidar_odometry)/launch/lidar_odometry.launch"/>
+  <include file="$(find localization)/launch/localization.launch"/>
+
+  <!-- Phase 4 perception (optional) -->
+  <group if="$(arg with_perception)">
+    <include file="$(find object_detection)/launch/object_detection.launch">
+      <arg name="dataset_root" value="$(arg dataset_root)"/>
+      <arg name="date" value="$(arg date)"/>
+      <arg name="drive" value="$(arg drive)"/>
+      <arg name="sync_type" value="$(arg sync_type)"/>
+    </include>
+    <include file="$(find object_tracking)/launch/object_tracking.launch"/>
+    <include file="$(find semantic_segmentation)/launch/semantic_segmentation.launch"/>
+    <include file="$(find depth_estimation)/launch/depth_estimation.launch"/>
+  </group>
+
+  <!-- Phase 6: mapping + prediction -->
+  <include file="$(find semantic_mapping)/launch/semantic_mapping.launch"/>
+  <include file="$(find occupancy_grid)/launch/occupancy_grid.launch"/>
+  <include file="$(find motion_prediction)/launch/motion_prediction.launch"/>
+</launch>
