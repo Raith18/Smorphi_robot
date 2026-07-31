@@ -47,8 +47,8 @@ can be validated against ground truth and compared with published results.
 |---|---|---|
 | **1** | Development Environment · ROS Workspace · Git · Docker · Dataset Management | ✅ **Done** |
 | **2** | KITTI ROS Player · Time Synchronization · Calibration · Sensor Drivers | ✅ **Done** |
-| **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ⏳ Next |
-| **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ⏳ Pending |
+| **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ✅ **Done** |
+| **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ⏳ Next |
 | **5** | Visual SLAM · LiDAR SLAM · Sensor-Fusion Localization | ⏳ Pending |
 | **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Pending |
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ⏳ Pending |
@@ -70,6 +70,19 @@ rostopic echo -n1 /time_sync/statistics
 rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/kitti_sensors.rviz
 # offline bag (no roscore needed):
 rosrun dataset_loader kitti_to_bag.py --root /data/kitti --output /data/kitti/sample.bag
+```
+
+### Phase 3 quick demo
+
+```bash
+source /opt/ros/noetic/setup.bash && source devel/setup.bash
+roslaunch adaptive_amr phase3_pipelines.launch rate:=1
+# new terminal:
+rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase3_fusion.rviz
+#   - colored LiDAR aligned with the camera (fusion!)
+#   - obstacles (red) vs ground (green), 3D cluster boxes
+#   - fusion overlay + sparse depth image
+rostopic hz /camera/image_rect /lidar_processing/obstacles /fusion/sparse_depth
 ```
 
 ---

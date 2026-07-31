@@ -1,0 +1,55 @@
+<launch>
+  <!--
+    phase3_pipelines.launch — Phase 2 sensors + camera pipeline + LiDAR
+    pipeline + camera-LiDAR fusion.
+
+    Starts:
+      calibration, camera_node, lidar_node, gps_node, imu_node, time_sync
+      camera_processing   -> /camera/image_rect (+ /camera/camera_info_rect)
+      lidar_processing    -> /lidar_processing/{ground,obstacles,clusters,boxes}
+      sensor_fusion       -> /fusion/{colored_points,sparse_depth,overlay}
+
+    Usage:
+      roslaunch adaptive_amr phase3_pipelines.launch
+      roslaunch adaptive_amr phase3_pipelines.launch rate:=0
+      roslaunch adaptive_amr phase3_pipelines.launch \
+          dataset_root:=$(pwd)/data/kitti
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="sync_type" default="exact"/>
+
+  <!-- Phase 2 sensor layer (camera_node stops publishing /camera/image_rect:
+       camera_processing owns that topic from Phase 3 on) -->
+  <include file="$(find dataset_loader)/launch/kitti_player.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="publish_rect" value="false"/>
+  </include>
+
+  <include file="$(find calibration)/launch/calibration.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+  </include>
+
+  <include file="$(find time_sync)/launch/time_sync.launch">
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+
+  <!-- Phase 3 pipelines -->
+  <include file="$(find camera_processing)/launch/camera_processing.launch"/>
+
+  <include file="$(find lidar_processing)/launch/lidar_processing.launch"/>
+
+  <include file="$(find sensor_fusion)/launch/sensor_fusion.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+</launch>

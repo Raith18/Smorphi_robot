@@ -1,0 +1,99 @@
+# =============================================================================
+# phase3_fusion.rviz — Phase 3 pipeline visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase3_fusion.rviz
+# Shows: rectified camera, fusion overlay, colored LiDAR, ground vs obstacles,
+# cluster boxes, TF.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Show Arrows: true
+
+    - Class: rviz/PointCloud2
+      Name: Colored LiDAR (fusion)
+      Enabled: true
+      Topic: /fusion/colored_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: Obstacles
+      Enabled: true
+      Topic: /lidar_processing/obstacles
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: FlatColor
+      Color: 255; 85; 85
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: Ground
+      Enabled: false
+      Topic: /lidar_processing/ground
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: FlatColor
+      Color: 90; 160; 90
+      Use Fixed Frame: true
+
+    - Class: rviz/MarkerArray
+      Name: Cluster boxes
+      Enabled: true
+      Topic: /lidar_processing/boxes
+
+    - Class: rviz/Camera
+      Name: Camera (image_rect)
+      Enabled: true
+      Image Topic: /camera/image_rect
+      Transport Hint: raw
+      Visibility Policy: Replace
+
+    - Class: rviz/Image
+      Name: Fusion overlay
+      Enabled: true
+      Image Topic: /fusion/overlay
+      Transport Hint: raw
+
+    - Class: rviz/Image
+      Name: Sparse depth (32FC1)
+      Enabled: false
+      Image Topic: /fusion/sparse_depth
+      Transport Hint: raw
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 30
+      Focal Point: [0, 0, 0]
+      Pitch: 0.5
+      Yaw: -0.5
+      Target Frame: map
