@@ -1,0 +1,26 @@
+# lidar_processing — private parameters (loaded by lidar_processing.launch)
+points_topic: /velodyne_points
+output_ns: /lidar_processing
+
+enable_passthrough: true
+limits: {x: [-80, 80], y: [-80, 80], z: [-3, 8]}
+min_range: 0.5
+max_range: 120.0
+
+enable_voxel: true
+voxel_leaf: 0.3
+
+enable_ground_removal: true
+ground_distance_threshold: 0.2
+ground_max_iterations: 50
+ground_min_normal_z: 0.6
+
+enable_clustering: true
+cluster_tolerance: 0.5
+cluster_min_size: 10
+cluster_max_size: 200000
+
+enable_boxes: true
+box_min_dimension: 0.4
+
+diagnostics_rate: 1.0

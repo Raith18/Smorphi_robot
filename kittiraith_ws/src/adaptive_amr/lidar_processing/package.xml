@@ -2,11 +2,20 @@
 <package format="2">
   <name>lidar_processing</name>
   <version>0.1.0</version>
-  <description>lidar_processing: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    LiDAR pipeline node: passthrough filtering, voxel downsampling, RANSAC
+    ground segmentation, Euclidean clustering and PCA oriented bounding
+    boxes. Publishes obstacle/ground/cluster point clouds and 3D box markers.
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
 </package>

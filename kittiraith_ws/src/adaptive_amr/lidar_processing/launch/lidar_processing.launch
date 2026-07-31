@@ -1,0 +1,14 @@
+<launch>
+  <!--
+    lidar_processing.launch — LiDAR pipeline (filter/downsample/ground/cluster).
+
+    Usage:
+      roslaunch lidar_processing lidar_processing.launch
+      roslaunch lidar_processing lidar_processing.launch points_topic:=/time_sync/points
+  -->
+  <node name="lidar_processing_node" pkg="lidar_processing"
+        type="lidar_processing_node.py" output="screen">
+    <rosparam file="$(find lidar_processing)/config/lidar_processing.yaml"
+              command="load"/>
+  </node>
+</launch>
