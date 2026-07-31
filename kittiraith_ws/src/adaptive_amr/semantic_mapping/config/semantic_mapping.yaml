@@ -1,0 +1,11 @@
+# semantic_mapping — private parameters (loaded by semantic_mapping.launch)
+colored_points_topic: /semantic_map/colored_points
+pose_topic: /localization_pose
+fallback_odom_topic: /lidar_odometry
+use_localization: true        # false -> use fallback_odom_topic as the pose
+map_frame: map
+voxel_size: 0.2               # map resolution [m]
+max_voxels: 400000            # memory bound (auto-coarsens beyond this)
+queue_size: 20
+approx_slop: 0.1
+diagnostics_rate: 1.0

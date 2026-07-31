@@ -11,6 +11,8 @@ add_message_files(
   ObjectDetectionArray.msg
   ObjectTrack.msg
   ObjectTrackArray.msg
+  DynamicObstacle.msg
+  DynamicObstacleArray.msg
 )
 
 add_service_files(

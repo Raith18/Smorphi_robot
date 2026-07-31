@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    semantic_mapping.launch — global semantic map node.
+
+    Usage:
+      roslaunch semantic_mapping semantic_mapping.launch
+  -->
+  <node name="semantic_mapping_node" pkg="semantic_mapping"
+        type="semantic_mapping_node.py" output="screen">
+    <rosparam file="$(find semantic_mapping)/config/semantic_mapping.yaml"
+              command="load"/>
+  </node>
+</launch>
