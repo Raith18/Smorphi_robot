@@ -1,0 +1,23 @@
+# localization — private parameters (loaded by localization.launch)
+points_topic: /velodyne_points
+odom_topic: /lidar_odometry
+map_frame: map
+odom_frame: odom
+base_frame: base_link
+output_topic: /localization_pose
+enable_tf: true              # publish dynamic TF map -> odom
+queue_size: 20
+approx_slop: 0.1
+
+# mapping phase
+voxel_leaf: 0.5
+min_map_points: 60000        # mapping ends when the map reaches this size
+max_map_points: 400000
+max_mapping_frames: 200
+
+# ICP localization
+max_correspondence_distance: 2.0
+max_translation_jump: 5.0    # reject implausible corrections
+
+publish_map_interval: 10     # frames between /localization/map publishes
+diagnostics_rate: 1.0

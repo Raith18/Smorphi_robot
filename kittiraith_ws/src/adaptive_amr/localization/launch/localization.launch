@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    localization.launch — ICP scan-to-map localization node (no EKF).
+
+    Usage:
+      roslaunch localization localization.launch
+  -->
+  <node name="localization_node" pkg="localization"
+        type="localization_node.py" output="screen">
+    <rosparam file="$(find localization)/config/localization.yaml"
+              command="load"/>
+  </node>
+</launch>
