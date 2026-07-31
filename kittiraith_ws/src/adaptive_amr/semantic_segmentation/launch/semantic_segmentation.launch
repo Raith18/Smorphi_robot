@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    semantic_segmentation.launch — YOLOv8-seg segmentation node.
+
+    Usage:
+      roslaunch semantic_segmentation semantic_segmentation.launch
+  -->
+  <node name="semantic_segmentation_node" pkg="semantic_segmentation"
+        type="semantic_segmentation_node.py" output="screen">
+    <rosparam file="$(find semantic_segmentation)/config/semantic_segmentation.yaml"
+              command="load"/>
+  </node>
+</launch>

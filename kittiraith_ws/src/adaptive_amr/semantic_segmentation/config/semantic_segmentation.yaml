@@ -1,0 +1,16 @@
+# semantic_segmentation — private parameters (loaded by semantic_segmentation.launch)
+image_topic: /camera/image_rect
+points_topic: /velodyne_points
+sync_type: exact            # exact | approx
+queue_size: 20
+approx_slop: 0.05
+
+model: yolov8n-seg.pt         # YOLOv8 nano segmentation (CPU-friendly)
+conf_threshold: 0.35
+imgsz: 640
+device: cpu                  # cpu | auto | cuda:0
+max_det: 20
+
+output_ns: /semantic_map
+publish_colored_points: true
+diagnostics_rate: 1.0

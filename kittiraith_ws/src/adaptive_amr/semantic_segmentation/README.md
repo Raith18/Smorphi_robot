@@ -1,61 +1,85 @@
 # semantic_segmentation
 
-| Phase | Status |
-|---|---|
-| Implementation | Pending (see phase roadmap in the root README) |
+> **Phase 4 — ✅ implemented**
 
-## Objective
-<!-- Filled in during the implementation phase. -->
+## 1. Objective
+Per-pixel class labels with **YOLOv8-seg** (same library as detection):
+label image, colored image, and labels painted onto the LiDAR cloud
+(PointPainting-style).
 
-## Theory
-<!-- Mathematical formulation, algorithms, alternatives. -->
+## 2. Theory
+YOLOv8-seg adds a mask head: per-cell mask coefficients + box-cropped mask
+upsampling → instance masks. We merge instances into a class-id image
+(overlap resolved by confidence order), colorize it, and project each LiDAR
+point into the label image to color the cloud.
 
-## Industrial importance
-<!-- Why warehouse/AMR companies need this module. -->
+## 3. Industrial importance
+Semantic point clouds are what planners use to distinguish obstacles from
+drivable space and people from boxes (Phases 6-7). Painting semantics onto
+LiDAR is the cheap version of PointPainting used by many AMR stacks.
 
-## Folder structure
+## 4. Folder structure
 ```
 semantic_segmentation/
-├── src/          # C++ / Python sources
-├── launch/       # launch files
-├── config/       # YAML parameters
-├── rviz/         # RViz display configs
-└── test/         # unit/integration tests
+├── src/semantic_segmentation/segmentation_utils.py  # pure helpers (tested)
+├── scripts/semantic_segmentation_node.py
+├── launch/semantic_segmentation.launch
+├── config/semantic_segmentation.yaml
+└── test/test_segmentation_utils.py                  # 7 tests
 ```
 
-## ROS topics (planned)
-<!-- /topic_name  (MsgType)  publisher|subscriber  — description -->
+## 5. Required packages
+`rospy sensor_msgs message_filters diagnostic_msgs dataset_loader
+sensor_fusion numpy opencv-python torch torchvision ultralytics`
 
-## TF frames (planned)
-<!-- parent -> child  — description -->
+## 6-8. ROS topics
+| Topic | Type | Dir |
+|---|---|---|
+| `/semantic_map` | `sensor_msgs/Image` (uint8 labels) | pub |
+| `/semantic_map/colored` | `sensor_msgs/Image` (bgr8) | pub |
+| `/semantic_map/colored_points` | `sensor_msgs/PointCloud2` (rgb) | pub |
+| `/semantic_map/statistics` | `DiagnosticArray` | pub |
+| `/camera/image_rect`, `/velodyne_points`, `/camera/camera_info_rect` | — | sub |
 
-## Parameters (planned)
-<!-- name (type, default) — description -->
+## 9. Parameters / 10. Configuration
+`config/semantic_segmentation.yaml`: `model (yolov8n-seg.pt)`,
+`conf_threshold`, `imgsz`, `device`, `max_det`, `publish_colored_points`.
 
-## Launch (planned)
+## 11. Python classes
+`segmentation_utils`: `build_label_image`, `colorize_labels`, `class_color`,
+fixed `CLASS_COLORS` palette.
+
+## 12. Launch
 ```bash
 roslaunch semantic_segmentation semantic_segmentation.launch
 ```
 
-## Testing procedure
-<!-- How to verify the module on KITTI data. -->
-
-## Expected outputs
-<!-- Topics/plots/metrics to expect. -->
-
-## Performance metrics
-<!-- Latency, throughput, accuracy, resource usage. -->
-
-## Debugging guide
-<!-- rqt_graph, rostopic, rosbag, gdb... -->
-
-## Common errors
-<!-- Symptom -> cause -> fix. -->
-
-## Improvements
-<!-- Future work. -->
-
-## Git commit message (suggested)
+## 13. Testing procedure
+```bash
+python3 src/adaptive_amr/semantic_segmentation/test/test_segmentation_utils.py
+# live:
+rostopic hz /semantic_map
 ```
-feat(semantic_segmentation): <what was implemented>
-```
+
+## 14. RViz configuration
+`adaptive_amr/rviz/phase4_perception.rviz`.
+
+## 15. Expected outputs
+Label/colored images; colored LiDAR where cars are blue, people red-ish, etc.
+
+## 16. Performance metrics
+YOLOv8n-seg @640px CPU: 80-200 ms.
+
+## 17. Debugging guide
+All-black map → model not producing masks (`yolov8n-seg.pt` — NOT the det
+model); colored points missing → calibration/TF (see sensor_fusion).
+
+## 18. Common errors
+Wrong model file → masks empty; use the `-seg` variant.
+
+## 19. Improvements
+Share one inference server across detection+segmentation; true semantic
+classes (road/sidewalk) via KITTI semantic devkit; learned PointPainting.
+
+## 20. Git commit
+`feat(semantic_segmentation): add YOLOv8-seg labels and semantic point painting`
