@@ -1,0 +1,25 @@
+<launch>
+  <!--
+    visual_odometry.launch — stereo visual odometry node.
+
+    Expects left/right rectified images + CameraInfos (see
+    phase5_odometry.launch which wires camera 02/03).
+
+    Usage:
+      roslaunch visual_odometry visual_odometry.launch
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="enable_tf" default="true"/>
+
+  <node name="visual_odometry_node" pkg="visual_odometry"
+        type="visual_odometry_node.py" output="screen">
+    <rosparam file="$(find visual_odometry)/config/visual_odometry.yaml"
+              command="load"/>
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <param name="enable_tf" value="$(arg enable_tf)"/>
+  </node>
+</launch>

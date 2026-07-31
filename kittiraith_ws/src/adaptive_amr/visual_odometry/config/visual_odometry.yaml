@@ -1,0 +1,27 @@
+# visual_odometry — private parameters (loaded by visual_odometry.launch)
+left_image_topic: /camera/image_raw
+right_image_topic: /camera_right/image_raw
+left_camera_info: /camera/camera_02/camera_info
+right_camera_info: /camera/camera_03/camera_info
+queue_size: 20
+approx_slop: 0.05
+
+odom_frame: odom
+base_frame: base_link
+camera_frame: camera_optical_frame
+enable_tf: true              # publish TF odom -> base_link
+output_ns: /visual_odometry
+
+# feature / geometry
+max_features: 1500
+quality_level: 0.01
+min_distance: 10
+min_inliers: 15
+ransac_reproj: 3.0
+
+diagnostics_rate: 1.0
+
+# fallback calibration (used when TF lookup fails)
+dataset_root: /data/kitti
+date: "2011_09_26"
+drive: "2011_09_26_drive_0005"
