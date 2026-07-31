@@ -1,0 +1,77 @@
+# =============================================================================
+# kitti_sensors.rviz — Phase 2 sensor visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/kitti_sensors.rviz
+# Expected: left image view (KITTI camera), velodyne point cloud in 3D,
+# TF axes (laser, camera_link, imu_link), GPS/IMU data via topic views.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Frames:
+        All Enabled: true
+      Show Arrows: true
+
+    - Class: rviz/PointCloud2
+      Name: Velodyne scan
+      Enabled: true
+      Topic: /velodyne_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: Intensity
+      Channel Name: intensity
+      Use Fixed Frame: true
+      Decay Time: 0
+
+    - Class: rviz/Camera
+      Name: KITTI camera (image_raw)
+      Enabled: true
+      Image Topic: /camera/image_raw
+      Transport Hint: raw
+      Visibility Policy: Replace
+      Overlay Alpha: 0.5
+
+    - Class: rviz/Image
+      Name: KITTI camera (2D view)
+      Enabled: true
+      Image Topic: /camera/image_raw
+      Transport Hint: raw
+
+    - Class: rviz/TF
+      Name: TF (tree)
+      Enabled: true
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 30
+      Focal Point: [0, 0, 0]
+      Pitch: 0.5
+      Yaw: -0.5
+      Target Frame: map

@@ -1,0 +1,45 @@
+<launch>
+  <!--
+    phase2_kitti_sensors.launch — full Phase 2 sensor stack on KITTI.
+
+    Starts:
+      calibration_node   -> CameraInfo + static TF tree (/tf_static)
+      camera_node        -> /camera/image_raw (+ /camera/image_rect)
+      lidar_node         -> /velodyne_points
+      gps_node           -> /gps/fix
+      imu_node           -> /imu/data
+      time_sync_node     -> /time_sync/{image,points,imu,gps,statistics}
+
+    Usage:
+      roslaunch adaptive_amr phase2_kitti_sensors.launch
+      roslaunch adaptive_amr phase2_kitti_sensors.launch rate:=0
+      roslaunch adaptive_amr phase2_kitti_sensors.launch sync_type:=approx
+      roslaunch adaptive_amr phase2_kitti_sensors.launch \
+          dataset_root:=$(pwd)/data/kitti
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="sync_type" default="exact"/>
+
+  <!-- Calibration: CameraInfo + static TF (must come up first for tf lookups) -->
+  <include file="$(find calibration)/launch/calibration.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+  </include>
+
+  <!-- Sensor drivers (KITTI player) -->
+  <include file="$(find dataset_loader)/launch/kitti_player.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+
+  <!-- Time synchronization -->
+  <include file="$(find time_sync)/launch/time_sync.launch">
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+</launch>

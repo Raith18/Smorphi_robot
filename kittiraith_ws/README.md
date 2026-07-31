@@ -46,8 +46,8 @@ can be validated against ground truth and compared with published results.
 | Phase | Title | Status |
 |---|---|---|
 | **1** | Development Environment · ROS Workspace · Git · Docker · Dataset Management | ✅ **Done** |
-| **2** | KITTI ROS Player · Time Synchronization · Calibration · Sensor Drivers | ⏳ Next |
-| **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ⏳ Pending |
+| **2** | KITTI ROS Player · Time Synchronization · Calibration · Sensor Drivers | ✅ **Done** |
+| **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ⏳ Next |
 | **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ⏳ Pending |
 | **5** | Visual SLAM · LiDAR SLAM · Sensor-Fusion Localization | ⏳ Pending |
 | **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Pending |
@@ -58,6 +58,19 @@ can be validated against ground truth and compared with published results.
 
 Each phase is delivered as: **theory → industrial context → mathematics → implementation
 → testing → debugging → documentation → interview questions**, with a Git commit at the end.
+
+### Phase 2 quick demo
+
+```bash
+source /opt/ros/noetic/setup.bash && source devel/setup.bash
+roslaunch adaptive_amr phase2_kitti_sensors.launch rate:=1   # real-time KITTI replay
+# new terminal:
+rostopic hz /camera/image_raw /velodyne_points /imu/data /gps/fix
+rostopic echo -n1 /time_sync/statistics
+rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/kitti_sensors.rviz
+# offline bag (no roscore needed):
+rosrun dataset_loader kitti_to_bag.py --root /data/kitti --output /data/kitti/sample.bag
+```
 
 ---
 
