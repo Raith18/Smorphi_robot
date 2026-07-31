@@ -1,0 +1,90 @@
+# =============================================================================
+# phase5_odometry.rviz — Phase 5 odometry & localization visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase5_odometry.rviz
+# Shows: TF tree, odometry paths (visual + lidar), localization map + pose,
+# velodyne scan.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Show Arrows: true
+
+    - Class: rviz/Path
+      Name: LiDAR odometry path
+      Enabled: true
+      Topic: /lidar_odometry/path
+      Color: 0; 255; 0
+      Line Style: Lines
+      Line Width: 0.05
+
+    - Class: rviz/Path
+      Name: Visual odometry path
+      Enabled: true
+      Topic: /visual_odometry/path
+      Color: 255; 200; 0
+      Line Style: Lines
+      Line Width: 0.05
+
+    - Class: rviz/PointCloud2
+      Name: Localization map
+      Enabled: true
+      Topic: /localization/map
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: FlatColor
+      Color: 130; 130; 160
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: Velodyne scan
+      Enabled: false
+      Topic: /velodyne_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: Intensity
+      Channel Name: intensity
+      Use Fixed Frame: true
+
+    - Class: rviz/PoseWithCovariance
+      Name: Localization pose
+      Enabled: true
+      Topic: /localization_pose
+      Color: 255; 85; 85
+      Show Axes: true
+      Axes Length: 2.0
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 60
+      Focal Point: [0, 0, 0]
+      Pitch: 0.7
+      Yaw: -0.5
+      Target Frame: map

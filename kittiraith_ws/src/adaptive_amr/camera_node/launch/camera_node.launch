@@ -13,8 +13,10 @@
   <arg name="rate" default="1.0"/>
   <arg name="camera_index" default="2"/>
   <arg name="publish_rect" default="true"/>
+  <arg name="image_topic" default="/camera/image_raw"/>
+  <arg name="node_name" default="camera_node"/>
 
-  <node name="camera_node" pkg="camera_node" type="camera_node.py" output="screen">
+  <node name="$(arg node_name)" pkg="camera_node" type="camera_node.py" output="screen">
     <param name="dataset_root" value="$(arg dataset_root)"/>
     <param name="date" value="$(arg date)"/>
     <param name="drive" value="$(arg drive)"/>
@@ -23,5 +25,6 @@
     <!-- overrides must come AFTER the rosparam load to take effect -->
     <param name="publish_rect_copy" value="$(arg publish_rect)"/>
     <param name="rate_factor" value="$(arg rate)"/>
+    <param name="image_topic" value="$(arg image_topic)"/>
   </node>
 </launch>

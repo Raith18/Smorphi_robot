@@ -1,0 +1,90 @@
+<launch>
+  <!--
+    phase5_odometry.launch — Phase 5 odometry & ICP localization stack.
+
+    Starts:
+      calibration, camera_node (cam 02 left, cam 03 right), lidar_node,
+      gps_node, imu_node
+      visual_odometry   -> /visual_odometry (stereo VO, no TF by default)
+      lidar_odometry    -> /lidar_odometry + TF odom->base_link
+      localization      -> /localization_pose + TF map->odom (ICP scan-to-map)
+
+    Usage:
+      roslaunch adaptive_amr phase5_odometry.launch
+      roslaunch adaptive_amr phase5_odometry.launch rate:=0
+      roslaunch adaptive_amr phase5_odometry.launch \
+          dataset_root:=$(pwd)/data/kitti
+
+    Notes:
+      * Only ONE odometry node publishes TF odom->base_link at a time to keep
+        the TF tree clean: lidar_odometry by default. Enable the VO TF with
+        vo_enable_tf:=true and disable the lidar one with lo_enable_tf:=false.
+      * Localization builds its map for the first ~60-200 frames, then
+        switches to ICP localization automatically (see /localization/statistics).
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="vo_enable_tf" default="false"/>
+  <arg name="lo_enable_tf" default="true"/>
+
+  <!-- Calibration (CameraInfo for all cams + static TF) -->
+  <include file="$(find calibration)/launch/calibration.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+  </include>
+
+  <!-- Stereo camera pair: cam 02 (left color) + cam 03 (right color) -->
+  <include file="$(find camera_node)/launch/camera_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="camera_index" value="2"/>
+    <arg name="node_name" value="camera_node_left"/>
+    <arg name="image_topic" value="/camera/image_raw"/>
+  </include>
+  <include file="$(find camera_node)/launch/camera_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="camera_index" value="3"/>
+    <arg name="node_name" value="camera_node_right"/>
+    <arg name="image_topic" value="/camera_right/image_raw"/>
+  </include>
+
+  <!-- LiDAR + GPS + IMU drivers -->
+  <include file="$(find lidar_node)/launch/lidar_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+  <include file="$(find gps_node)/launch/gps_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+  <include file="$(find imu_node)/launch/imu_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+
+  <!-- Odometry + localization -->
+  <include file="$(find visual_odometry)/launch/visual_odometry.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="enable_tf" value="$(arg vo_enable_tf)"/>
+  </include>
+
+  <include file="$(find lidar_odometry)/launch/lidar_odometry.launch"/>
+
+  <include file="$(find localization)/launch/localization.launch"/>
+</launch>

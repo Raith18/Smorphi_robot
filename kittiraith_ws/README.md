@@ -49,8 +49,8 @@ can be validated against ground truth and compared with published results.
 | **2** | KITTI ROS Player · Time Synchronization · Calibration · Sensor Drivers | ✅ **Done** |
 | **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ✅ **Done** |
 | **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ✅ **Done** |
-| **5** | Visual SLAM · LiDAR SLAM · Sensor-Fusion Localization | ⏳ Next |
-| **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Pending |
+| **5** | Visual Odometry · LiDAR Odometry · ICP Localization | ✅ **Done** |
+| **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Next |
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ⏳ Pending |
 | **8** | Performance Benchmarking · Profiling · Optimization | ⏳ Pending |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Pending |
@@ -98,6 +98,21 @@ rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase4_perception.rviz
 #   - dense depth image (LiDAR depth completed everywhere)
 rostopic hz /object_detections /object_tracks /semantic_map /depth/dense
 # CPU-only stack: if 10 Hz is too much for your CPU, use rate:=0.5 or imgsz:=416
+```
+
+### Phase 5 quick demo
+
+```bash
+roslaunch adaptive_amr phase5_odometry.launch rate:=1
+# new terminal:
+rostopic hz /visual_odometry /lidar_odometry /localization_pose
+rostopic echo -n1 /localization/statistics      # phase: mapping -> localizing
+rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase5_odometry.rviz
+#   - green path = LiDAR odometry (ICP scan-to-scan)
+#   - yellow path = stereo visual odometry
+#   - grey map = /localization/map growing during mapping
+#   - red pose arrow = /localization_pose (ICP scan-to-map, no EKF)
+#   - TF tree: map -> odom -> base_link fully dynamic
 ```
 
 ---
