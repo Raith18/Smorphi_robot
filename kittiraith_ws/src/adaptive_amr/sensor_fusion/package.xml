@@ -2,11 +2,24 @@
 <package format="2">
   <name>sensor_fusion</name>
   <version>0.1.0</version>
-  <description>sensor_fusion: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    Camera-LiDAR fusion node: projects Velodyne points into the camera image
+    (p_img = P_rect * R_rect * T_velo_cam * p_velo), produces a sparse LiDAR
+    depth image, a camera-colored point cloud and a projected overlay image.
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>message_filters</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>dataset_loader</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 </package>

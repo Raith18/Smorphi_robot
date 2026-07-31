@@ -1,0 +1,21 @@
+# sensor_fusion — private parameters (loaded by sensor_fusion.launch)
+image_topic: /camera/image_rect
+points_topic: /velodyne_points
+camera_info_topic: /camera/camera_info_rect
+sync_type: exact            # exact | approx (approx for real multi-clock robots)
+queue_size: 20
+approx_slop: 0.05
+
+laser_frame: laser
+camera_frame: camera_optical_frame
+
+use_tf: true
+load_calibration_from_dataset: true
+dataset_root: /data/kitti
+date: "2011_09_26"
+drive: "2011_09_26_drive_0005"
+
+output_ns: /fusion
+publish_overlay: true
+max_projection_distance: 120.0
+diagnostics_rate: 1.0
