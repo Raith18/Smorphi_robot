@@ -1,0 +1,20 @@
+<launch>
+  <!--
+    gps_node.launch — KITTI GPS driver.
+
+    Usage:
+      roslaunch gps_node gps_node.launch
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+
+  <node name="gps_node" pkg="gps_node" type="gps_node.py" output="screen">
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <rosparam file="$(find gps_node)/config/gps_node.yaml" command="load"/>
+    <param name="rate_factor" value="$(arg rate)"/>
+  </node>
+</launch>

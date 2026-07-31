@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(gps_node)
 
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs)
+find_package(catkin REQUIRED COMPONENTS rospy sensor_msgs)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ${PROJECT_NAME}
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS rospy sensor_msgs
+)
+
+catkin_install_python(
+  PROGRAMS scripts/gps_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

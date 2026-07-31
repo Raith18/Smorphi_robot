@@ -1,61 +1,75 @@
 # gps_node
 
-| Phase | Status |
-|---|---|
-| Implementation | Pending (see phase roadmap in the root README) |
+> **Phase 2 — ✅ implemented**
 
-## Objective
-<!-- Filled in during the implementation phase. -->
+## 1. Objective
+Replay the GPS part of KITTI OXTS data as `sensor_msgs/NavSatFix` on
+`/gps/fix`, like a real GNSS receiver driver.
 
-## Theory
-<!-- Mathematical formulation, algorithms, alternatives. -->
+## 2. Theory
+OXTS logs WGS-84 latitude/longitude/altitude plus `pos_accuracy`, `navstat`
+and `numsats`. The node maps those to `NavSatFix` (status, covariance
+diagonal). GPS is *global but noisy* — later phases fuse it with IMU/odometry.
 
-## Industrial importance
-<!-- Why warehouse/AMR companies need this module. -->
+## 3. Industrial importance
+Warehouse robots use GPS rarely (indoors), but outdoor AMRs and AGVs depend on
+GNSS/RTK; the same `NavSatFix` interface is the industry standard.
 
-## Folder structure
+## 4. Folder structure
 ```
 gps_node/
-├── src/          # C++ / Python sources
-├── launch/       # launch files
-├── config/       # YAML parameters
-├── rviz/         # RViz display configs
-└── test/         # unit/integration tests
+├── package.xml  CMakeLists.txt
+├── scripts/gps_node.py
+├── launch/gps_node.launch
+└── config/gps_node.yaml
 ```
 
-## ROS topics (planned)
-<!-- /topic_name  (MsgType)  publisher|subscriber  — description -->
+## 5. Required packages
+`rospy sensor_msgs dataset_loader`
 
-## TF frames (planned)
-<!-- parent -> child  — description -->
+## 6-8. ROS topics
+| Topic | Type | Dir |
+|---|---|---|
+| `/gps/fix` | `sensor_msgs/NavSatFix` | pub (frame `imu_link`) |
 
-## Parameters (planned)
-<!-- name (type, default) — description -->
+## 9. Parameters
+`dataset_root, date, drive, fix_topic, frame_id, rate_factor, loop`
 
-## Launch (planned)
+## 10. Configuration
+`config/gps_node.yaml` — all of the above.
+
+## 11. Python classes
+`GpsNode` — OXTS reader + `NavSatFix` builder (shared `build_navsatfix_msg`).
+
+## 12. Launch
 ```bash
 roslaunch gps_node gps_node.launch
 ```
 
-## Testing procedure
-<!-- How to verify the module on KITTI data. -->
-
-## Expected outputs
-<!-- Topics/plots/metrics to expect. -->
-
-## Performance metrics
-<!-- Latency, throughput, accuracy, resource usage. -->
-
-## Debugging guide
-<!-- rqt_graph, rostopic, rosbag, gdb... -->
-
-## Common errors
-<!-- Symptom -> cause -> fix. -->
-
-## Improvements
-<!-- Future work. -->
-
-## Git commit message (suggested)
+## 13. Testing procedure
+```bash
+rostopic echo -n1 /gps/fix | grep -E "latitude|longitude|status"
+# Karlsruhe drive 0005: lat ≈ 49.00, lon ≈ 8.44 (degrees)
 ```
-feat(gps_node): <what was implemented>
-```
+
+## 14. RViz configuration
+`adaptive_amr/rviz/kitti_sensors.rviz` (or `rviz/NavSatFix` display in Phase 5).
+
+## 15. Expected outputs
+10 Hz `NavSatFix` with `STATUS_FIX`, covariance from OXTS `pos_accuracy`.
+
+## 16. Performance metrics
+Trivial (one 30-float line per frame).
+
+## 17. Debugging guide
+No fix → check `navstat`/`numsats` in the OXTS file (`kitti_parsers`),
+`rostopic hz`.
+
+## 18. Common errors
+GPS at (0,0) → OXTS file unparsed (30 values required) — run unit tests.
+
+## 19. Improvements
+ENU conversion topic (`/gps/odom`), RTK-style covariance, geoid correction.
+
+## 20. Git commit
+`feat(gps_node): add KITTI GPS driver node (NavSatFix)`

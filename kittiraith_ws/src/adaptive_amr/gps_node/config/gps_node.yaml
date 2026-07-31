@@ -1,0 +1,5 @@
+# gps_node — private parameters (loaded by gps_node.launch)
+fix_topic: /gps/fix
+frame_id: imu_link          # OXTS: GPS receiver and IMU are one unit
+rate_factor: 1.0            # 1.0 real time, >1 faster, 0 = as fast as possible
+loop: false
