@@ -52,7 +52,8 @@ can be validated against ground truth and compared with published results.
 | **5** | Visual Odometry · LiDAR Odometry · ICP Localization | ✅ **Done** |
 | **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ✅ **Done** |
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ✅ **Done** |
-| **8** | Performance Benchmarking · Profiling · Optimization | ⏳ Next |
+| **8** | Performance Benchmarking · Profiling · Optimization | ✅ **Done** |
+| **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Next |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Pending |
 | **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Pending |
 
