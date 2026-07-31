@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    motion_prediction.launch — dynamic obstacle prediction node.
+
+    Usage:
+      roslaunch motion_prediction motion_prediction.launch
+  -->
+  <node name="motion_prediction_node" pkg="motion_prediction"
+        type="motion_prediction_node.py" output="screen">
+    <rosparam file="$(find motion_prediction)/config/motion_prediction.yaml"
+              command="load"/>
+  </node>
+</launch>

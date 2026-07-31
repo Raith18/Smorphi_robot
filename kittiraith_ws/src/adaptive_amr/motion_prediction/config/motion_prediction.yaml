@@ -1,0 +1,11 @@
+# motion_prediction — private parameters (loaded by motion_prediction.launch)
+input_topic: /object_tracks
+output_topic: /dynamic_obstacles
+horizon_s: 3.0               # prediction horizon [s]
+steps: 10                    # trajectory samples
+process_noise: 0.5           # Kalman process noise (velocity growth)
+measurement_noise: 0.1       # Kalman measurement noise
+safe_distance: 1.5           # ego "collision zone" radius [m]
+frame_id: laser
+publish_markers: true
+diagnostics_rate: 1.0
