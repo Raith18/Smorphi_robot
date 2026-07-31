@@ -1,0 +1,21 @@
+<launch>
+  <!--
+    lidar_node.launch — KITTI Velodyne driver.
+
+    Usage:
+      roslaunch lidar_node lidar_node.launch
+      roslaunch lidar_node lidar_node.launch rate:=0     # fast replay
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+
+  <node name="lidar_node" pkg="lidar_node" type="lidar_node.py" output="screen">
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <rosparam file="$(find lidar_node)/config/lidar_node.yaml" command="load"/>
+    <param name="rate_factor" value="$(arg rate)"/>
+  </node>
+</launch>

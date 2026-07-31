@@ -1,0 +1,5 @@
+# lidar_node — private parameters (loaded by lidar_node.launch)
+points_topic: /velodyne_points
+frame_id: laser
+rate_factor: 1.0           # 1.0 real time, >1 faster, 0 = as fast as possible
+loop: false
