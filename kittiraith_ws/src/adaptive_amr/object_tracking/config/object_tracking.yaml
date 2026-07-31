@@ -1,0 +1,8 @@
+# object_tracking — private parameters (loaded by object_tracking.launch)
+input_topic: /object_detections
+output_topic: /object_tracks
+max_age: 4
+min_hits: 1
+iou_threshold: 0.3
+publish_markers: true
+diagnostics_rate: 1.0

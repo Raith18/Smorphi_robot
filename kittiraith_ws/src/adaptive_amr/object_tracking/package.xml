@@ -2,11 +2,21 @@
 <package format="2">
   <name>object_tracking</name>
   <version>0.1.0</version>
-  <description>object_tracking: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    Multi-object tracking with SORT (Simple Online and Realtime Tracking):
+    per-track Kalman filters + Hungarian assignment on IoU. Subscribes to
+    /object_detections and publishes stable object IDs on /object_tracks.
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>adaptive_amr_msgs</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
 </package>

@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    object_tracking.launch — SORT multi-object tracking node.
+
+    Usage:
+      roslaunch object_tracking object_tracking.launch
+  -->
+  <node name="object_tracking_node" pkg="object_tracking"
+        type="object_tracking_node.py" output="screen">
+    <rosparam file="$(find object_tracking)/config/object_tracking.yaml"
+              command="load"/>
+  </node>
+</launch>
