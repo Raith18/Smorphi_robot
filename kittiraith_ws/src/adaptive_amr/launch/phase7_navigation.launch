@@ -1,0 +1,43 @@
+<launch>
+  <!--
+    phase7_navigation.launch — the FULL autonomy stack (Phases 2-7).
+
+    Sensors -> processing -> fusion -> perception -> odometry -> localization
+    -> mapping -> prediction -> NAVIGATION (costmap + A* + behavior).
+
+    Usage:
+      roslaunch adaptive_amr phase7_navigation.launch
+      roslaunch adaptive_amr phase7_navigation.launch rate:=0.5
+      roslaunch adaptive_amr phase7_navigation.launch with_perception:=false
+      roslaunch adaptive_amr phase7_navigation.launch \
+          dataset_root:=$(pwd)/data/kitti
+
+    Set a goal (terminal 2):
+      rostopic pub /goal geometry_msgs/PoseStamped \
+        "{header: {frame_id: map}, pose: {position: {x: 15, y: 0, z: 0}, \
+         orientation: {w: 1}}}" -r 1
+    Watch the behavior state + velocity command:
+      rostopic echo /behavior/state
+      rostopic echo /behavior/velocity_command
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="sync_type" default="exact"/>
+  <arg name="with_perception" default="true"/>
+
+  <!-- Phases 2-6 -->
+  <include file="$(find adaptive_amr)/launch/phase6_mapping.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="sync_type" value="$(arg sync_type)"/>
+    <arg name="with_perception" value="$(arg with_perception)"/>
+  </include>
+
+  <!-- Phase 7: navigation, behavior, decision -->
+  <include file="$(find navigation_layer)/launch/navigation_layer.launch"/>
+  <include file="$(find navigation_layer)/launch/behavior.launch"/>
+</launch>

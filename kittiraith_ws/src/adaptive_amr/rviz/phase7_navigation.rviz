@@ -1,0 +1,90 @@
+# =============================================================================
+# phase7_navigation.rviz — Phase 7 navigation visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase7_navigation.rviz
+# Shows: occupancy grid, navigation costmap, planned path, robot pose,
+# behavior state, predicted trajectories, TF.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Show Arrows: true
+
+    - Class: rviz/Map
+      Name: Navigation costmap
+      Enabled: true
+      Topic: /navigation_costmap
+      Color Scheme: costmap
+      Alpha: 0.8
+
+    - Class: rviz/Map
+      Name: Occupancy grid
+      Enabled: false
+      Topic: /occupancy_grid
+      Color Scheme: map
+      Alpha: 0.7
+
+    - Class: rviz/Path
+      Name: Planned path (A*)
+      Enabled: true
+      Topic: /planned_path
+      Color: 0; 200; 255
+      Line Style: Lines
+      Line Width: 0.1
+
+    - Class: rviz/PoseWithCovariance
+      Name: Localization pose
+      Enabled: true
+      Topic: /localization_pose
+      Color: 255; 85; 85
+      Show Axes: true
+      Axes Length: 2.0
+
+    - Class: rviz/MarkerArray
+      Name: Predicted trajectories
+      Enabled: true
+      Topic: /dynamic_obstacles/markers
+
+    - Class: rviz/PointCloud2
+      Name: Semantic map
+      Enabled: false
+      Topic: /semantic_map
+      Style: Points
+      Size (Pixels): 3
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 50
+      Focal Point: [0, 0, 0]
+      Pitch: 0.9
+      Yaw: -0.5
+      Target Frame: map
