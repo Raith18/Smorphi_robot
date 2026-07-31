@@ -36,7 +36,7 @@ MODULES=(
   camera_processing lidar_processing calibration sensor_fusion
   object_detection semantic_segmentation object_tracking depth_estimation
   visual_odometry lidar_odometry localization semantic_mapping
-  occupancy_grid motion_prediction navigation_layer
+  occupancy_grid motion_prediction navigation_layer evaluation
 )
 
 # --- Shared directories inside the metapackage ---------------------------------

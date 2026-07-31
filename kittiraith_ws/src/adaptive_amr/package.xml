@@ -33,4 +33,5 @@
   <run_depend>occupancy_grid</run_depend>
   <run_depend>motion_prediction</run_depend>
   <run_depend>navigation_layer</run_depend>
+  <run_depend>evaluation</run_depend>
 </package>

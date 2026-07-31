@@ -376,6 +376,96 @@ class KittiPaths:
                 raise FileNotFoundError("Missing KITTI path: {}".format(path))
 
 
+class KittiOdometryPaths:
+    """Builds the on-disk layout of the KITTI ODOMETRY dataset (sequences 00-10)."""
+
+    def __init__(self, root: str, sequence: str = "00"):
+        self.root = root
+        self.sequence = str(sequence).zfill(2)
+        self.odometry_root = os.path.join(root, "odometry")
+        self.seq_dir = os.path.join(self.odometry_root, "sequences", self.sequence)
+
+    @property
+    def calib_path(self) -> str:
+        return os.path.join(self.seq_dir, "calib.txt")
+
+    @property
+    def times_path(self) -> str:
+        return os.path.join(self.seq_dir, "times.txt")
+
+    def image_dir(self, cam_index: int) -> str:
+        return os.path.join(self.seq_dir, "image_{:02d}".format(cam_index))
+
+    def image_path(self, frame_index: int, cam_index: int) -> str:
+        return os.path.join(self.image_dir(cam_index),
+                            "{:06d}.png".format(frame_index))
+
+    @property
+    def velodyne_dir(self) -> str:
+        return os.path.join(self.seq_dir, "velodyne")
+
+    def velodyne_path(self, frame_index: int) -> str:
+        return os.path.join(self.velodyne_dir, "{:06d}.bin".format(frame_index))
+
+    @property
+    def poses_path(self) -> str:
+        return os.path.join(self.odometry_root, "poses",
+                            "{}.txt".format(self.sequence))
+
+    def validate(self) -> None:
+        required = [self.seq_dir, self.calib_path, self.times_path,
+                    self.image_dir(0), self.velodyne_dir, self.poses_path]
+        for path in required:
+            if not os.path.exists(path):
+                raise FileNotFoundError("Missing KITTI odometry path: {}".format(path))
+
+
+# --------------------------------------------------------------------------- #
+# Odometry ground truth (KITTI odometry benchmark)
+# --------------------------------------------------------------------------- #
+def read_odometry_poses(path: str) -> List[np.ndarray]:
+    """
+    Read KITTI odometry ground-truth poses file (poses/<seq>.txt).
+
+    Each line holds 12 floats = a 3x4 [R | t] matrix (camera 0 -> world).
+    Returns a list of 4x4 homogeneous matrices.
+    """
+    poses: List[np.ndarray] = []
+    with open(path, "r") as handle:
+        for lineno, line in enumerate(handle, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            values = [float(tok) for tok in line.split()]
+            if len(values) != 12:
+                raise ValueError(
+                    "Invalid pose at {}:{} (expected 12 floats, got {})".format(
+                        path, lineno, len(values)))
+            matrix = np.eye(4)
+            matrix[:3, :] = np.asarray(values, dtype=float).reshape(3, 4)
+            poses.append(matrix)
+    if not poses:
+        raise ValueError("No poses found in {}".format(path))
+    return poses
+
+
+def read_odometry_times(path: str) -> List[float]:
+    """Read KITTI odometry times.txt (one relative timestamp per frame)."""
+    times: List[float] = []
+    with open(path, "r") as handle:
+        for lineno, line in enumerate(handle, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                times.append(float(line))
+            except ValueError as exc:
+                raise ValueError("Invalid time at {}:{}".format(path, lineno)) from exc
+    if not times:
+        raise ValueError("No times found in {}".format(path))
+    return times
+
+
 # --------------------------------------------------------------------------- #
 # Geometry helpers
 # --------------------------------------------------------------------------- #

@@ -1,0 +1,18 @@
+<launch>
+  <!--
+    perf_collector.launch — live ROS performance collector.
+
+    Usage:
+      roslaunch evaluation perf_collector.launch csv:=/tmp/perf.csv
+  -->
+  <arg name="csv" default="/tmp/perf.csv"/>
+  <arg name="ns" default=""/>
+  <arg name="sample_rate" default="5.0"/>
+
+  <node name="perf_collector" pkg="evaluation" type="perf_collector.py"
+        output="screen">
+    <param name="csv" value="$(arg csv)"/>
+    <param name="ns" value="$(arg ns)"/>
+    <param name="sample_rate" value="$(arg sample_rate)"/>
+  </node>
+</launch>

@@ -1,0 +1,12 @@
+# evaluation — benchmark configuration
+# Odometry GT root (KITTI odometry dataset): sequences/XX, poses/XX.txt
+gt_odom_root: /data/kitti/odometry
+sequence: "05"
+rpe_lengths: [100, 200]        # RPE sub-sequence lengths (frames)
+
+# MOT match threshold
+mot_iou_threshold: 0.5
+
+# report output (relative to the workspace root)
+report_dir: evaluation/report
+report_file: benchmark.md

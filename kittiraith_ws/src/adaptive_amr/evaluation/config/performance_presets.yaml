@@ -1,0 +1,53 @@
+# evaluation — performance presets (Phase 8 optimization recommendations)
+#
+# Presets map a target (accuracy vs speed) to the parameter values the
+# benchmark profiling suggests. Apply manually or via launch arg overrides.
+# Measured on a 2-core CPU VM (see docs/phase8_benchmarking.md for numbers).
+
+accuracy:                       # slower, best quality
+  lidar_odometry:
+    voxel_leaf: 0.3
+    max_iterations: 60
+  lidar_processing:
+    voxel_leaf: 0.2
+    cluster_tolerance: 0.4
+  occupancy_grid:
+    resolution: 0.1
+    width_m: 80.0
+  navigation_layer:
+    inflation_radius: 1.2
+  object_detection:
+    imgsz: 640
+    conf_threshold: 0.35
+
+balanced:                       # default (good quality/speed trade-off)
+  lidar_odometry:
+    voxel_leaf: 0.5
+    max_iterations: 40
+  lidar_processing:
+    voxel_leaf: 0.3
+    cluster_tolerance: 0.5
+  occupancy_grid:
+    resolution: 0.2
+    width_m: 60.0
+  navigation_layer:
+    inflation_radius: 1.0
+  object_detection:
+    imgsz: 640
+    conf_threshold: 0.35
+
+fast:                           # CPU-friendly (2 GB shared graphics)
+  lidar_odometry:
+    voxel_leaf: 0.8
+    max_iterations: 25
+  lidar_processing:
+    voxel_leaf: 0.5
+    cluster_tolerance: 0.7
+  occupancy_grid:
+    resolution: 0.4
+    width_m: 40.0
+  navigation_layer:
+    inflation_radius: 0.8
+  object_detection:
+    imgsz: 416
+    conf_threshold: 0.45

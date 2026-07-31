@@ -93,7 +93,12 @@ class OccupancyGridMapper:
     def add_scan(self, points: np.ndarray, robot_x: float, robot_y: float,
                  max_range: Optional[float] = None) -> None:
         """
-        Integrate one scan.
+        Integrate one scan (VECTORIZED ray casting, Phase 8 optimization).
+
+        Instead of a per-point Bresenham Python loop, every ray is sampled at
+        steps of <= 0.5 cells (so no grid cell is skipped) and the free/occ
+        updates are applied with np.add.at on a flattened grid. Points are
+        processed in chunks to bound memory.
 
         Args:
             points: (N, 2) obstacle points in the grid frame.
@@ -109,33 +114,57 @@ class OccupancyGridMapper:
         if points.shape[0] == 0:
             return
 
-        rx, ry = self.world_to_cell(robot_x, robot_y)
-        if not (0 <= rx < self.height and 0 <= ry < self.width):
-            return
+        origin = np.array([robot_x, robot_y], dtype=float)
+        step = 0.5 * self.resolution
+        chunk = 2048                       # points per vectorized chunk
+        flat_log = self.log_odds.ravel()
 
-        # ---- free cells along each ray (Bresenham) ---------------------------
-        for px, py in points:
-            cx, cy = self.world_to_cell(px, py)
-            if not (0 <= cx < self.height and 0 <= cy < self.width):
-                # still mark the visible part of the ray
-                cx = min(max(cx, 0), self.height - 1)
-                cy = min(max(cy, 0), self.width - 1)
-            for row, col in bresenham(rx, ry, cx, cy):
-                if not (0 <= row < self.height and 0 <= col < self.width):
-                    break
-                if row == cx and col == cy:
-                    continue          # endpoint handled as occupied below
-                self.log_odds[row, col] = np.clip(
-                    self.log_odds[row, col] + self.l_free,
-                    -self.l_clamp, self.l_clamp)
+        for start in range(0, points.shape[0], chunk):
+            pts = points[start:start + chunk]
+            dirs = pts[:, :2] - origin
+            dists = np.linalg.norm(dirs, axis=1)
+            n_samples = np.maximum(np.ceil(dists / step).astype(int), 1) + 1
+            max_n = int(n_samples.max())
+            if max_n < 1:
+                continue
 
-        # ---- occupied cells (endpoints) ---------------------------------------
-        for px, py in points:
-            cx, cy = self.world_to_cell(px, py)
-            if 0 <= cx < self.height and 0 <= cy < self.width:
-                self.log_odds[cx, cy] = np.clip(
-                    self.log_odds[cx, cy] + self.l_occ,
-                    -self.l_clamp, self.l_clamp)
+            t = np.linspace(0.0, 1.0, max_n)                     # (max_n,)
+            samples = (origin[None, :]
+                       + dirs[:, None, :] * t[None, :, None])    # (N, max_n, 2)
+            cols = np.floor(samples[..., 0] / self.resolution).astype(int) \
+                + self.half_w
+            rows = np.floor(samples[..., 1] / self.resolution).astype(int) \
+                + self.half_h
+
+            valid = np.arange(max_n)[None, :] < n_samples[:, None]
+            in_bounds = (valid
+                         & (rows >= 0) & (rows < self.height)
+                         & (cols >= 0) & (cols < self.width))
+
+            # last in-bounds sample of each ray = the occupied hit; everything
+            # before it along the ray is free
+            idx = np.arange(max_n)
+            last_in = np.where(in_bounds.any(axis=1),
+                               (in_bounds * idx[None, :]).max(axis=1), -1)
+            is_last = np.zeros_like(in_bounds)
+            valid_last = last_in >= 0
+            is_last[valid_last, last_in[valid_last]] = True
+
+            free_flat = (rows[in_bounds & ~is_last] * self.width
+                         + cols[in_bounds & ~is_last])
+            occ_flat = (rows[is_last] * self.width + cols[is_last])
+
+            # np.bincount is much faster than np.add.at for large scatters
+            if free_flat.size:
+                flat_log += np.bincount(free_flat,
+                                        minlength=self.height * self.width) \
+                    * self.l_free
+            if occ_flat.size:
+                flat_log += np.bincount(occ_flat,
+                                        minlength=self.height * self.width) \
+                    * self.l_occ
+
+        np.clip(flat_log, -self.l_clamp, self.l_clamp, out=flat_log)
 
     # ------------------------------------------------------------------ #
     def get_occupancy(self) -> np.ndarray:
