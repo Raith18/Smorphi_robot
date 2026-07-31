@@ -1,61 +1,85 @@
 # camera_processing
 
-| Phase | Status |
-|---|---|
-| Implementation | Pending (see phase roadmap in the root README) |
+> **Phase 3 — ✅ implemented**
 
-## Objective
-<!-- Filled in during the implementation phase. -->
+## 1. Objective
+Process the raw camera stream: undistortion/rectification (OpenCV or pure
+NumPy), color conversion, ROI crop and resize — always keeping `CameraInfo`
+consistent with the output image.
 
-## Theory
-<!-- Mathematical formulation, algorithms, alternatives. -->
+## 2. Theory
+Pinhole + plumb-bob distortion: `p_img = K·[R|t]·P_world`; rectification maps
+built as `(u,v) → ray → R_rectᵀ → distort(K,D) → source pixel`.
+Crop/resize rule: `f' = s·f, c' = s·(c−crop), t' = s·t`.
 
-## Industrial importance
-<!-- Why warehouse/AMR companies need this module. -->
+## 3. Industrial importance
+Every vision stack rectifies before fusion; publishing processed images with
+stale intrinsics silently breaks all projections — this node prevents that by
+design.
 
-## Folder structure
+## 4. Folder structure
 ```
 camera_processing/
-├── src/          # C++ / Python sources
-├── launch/       # launch files
-├── config/       # YAML parameters
-├── rviz/         # RViz display configs
-└── test/         # unit/integration tests
+├── src/camera_processing/rectify.py   # pure NumPy math (unit-tested)
+├── scripts/camera_processing_node.py
+├── launch/camera_processing.launch
+├── config/camera_processing.yaml
+└── test/test_rectify.py               # 13 tests
 ```
 
-## ROS topics (planned)
-<!-- /topic_name  (MsgType)  publisher|subscriber  — description -->
+## 5. Required packages
+`rospy std_msgs sensor_msgs diagnostic_msgs python3-numpy python3-opencv`
 
-## TF frames (planned)
-<!-- parent -> child  — description -->
+## 6-8. ROS topics
+| Topic | Type | Dir |
+|---|---|---|
+| `/camera/image_rect` | `sensor_msgs/Image` | pub |
+| `/camera/camera_info_rect` | `sensor_msgs/CameraInfo` | pub (latched, adjusted) |
+| `/camera/image_raw`, `/camera/camera_info` | sensor_msgs | sub |
 
-## Parameters (planned)
-<!-- name (type, default) — description -->
+## 9. Parameters / 10. Configuration
+`config/camera_processing.yaml`: `rectify_mode (none|undistort_rectify)`,
+`resize_scale`, `crop [x,y,w,h]`, `output_encoding (bgr8|rgb8|mono8)`,
+`adjust_camera_info`, topics, diagnostics.
 
-## Launch (planned)
+## 11. Python classes
+`RectifyMapper` (build+apply maps), `build_rectify_maps_numpy`,
+`build_crop_resize_maps_numpy`, `adjust_projection_matrix`,
+`adjust_intrinsics`, `remap_numpy`, `distort_point_norm`.
+
+## 12. Launch
 ```bash
 roslaunch camera_processing camera_processing.launch
 ```
 
-## Testing procedure
-<!-- How to verify the module on KITTI data. -->
-
-## Expected outputs
-<!-- Topics/plots/metrics to expect. -->
-
-## Performance metrics
-<!-- Latency, throughput, accuracy, resource usage. -->
-
-## Debugging guide
-<!-- rqt_graph, rostopic, rosbag, gdb... -->
-
-## Common errors
-<!-- Symptom -> cause -> fix. -->
-
-## Improvements
-<!-- Future work. -->
-
-## Git commit message (suggested)
+## 13. Testing procedure
+```bash
+python3 src/adaptive_amr/camera_processing/test/test_rectify.py
+# live:
+rostopic hz /camera/image_rect
 ```
-feat(camera_processing): <what was implemented>
-```
+
+## 14. RViz configuration
+`adaptive_amr/rviz/phase3_fusion.rviz`.
+
+## 15. Expected outputs
+Rectified image at configured size; `camera_info_rect` with adjusted P;
+diagnostics with process time.
+
+## 16. Performance metrics
+`cv2.remap` ~2-5 ms/frame @1241×376; NumPy fallback slower (nearest).
+
+## 17. Debugging guide
+No output → check camera_info topic exists; `rectify_mode` wrong for already
+rectified KITTI → use `none`.
+
+## 18. Common errors
+`Input image does not match camera_info size` → stale camera_info (latched
+topic from another camera); restart calibration node.
+
+## 19. Improvements
+Stereo rectification via `cv2.stereoRectify`, `initUndistortRectifyMap`
+alpha/ROI support, CUDA remap, sim-time clock.
+
+## 20. Git commit
+`feat(camera_processing): add camera rectification/processing pipeline`

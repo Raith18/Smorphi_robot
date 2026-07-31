@@ -1,0 +1,13 @@
+# camera_processing — private parameters (loaded by camera_processing.launch)
+input_topic: /camera/image_raw
+output_topic: /camera/image_rect
+camera_info_topic: /camera/camera_info
+output_ci_topic: /camera/camera_info_rect
+rectify_mode: none           # none (KITTI already rectified) | undistort_rectify
+resize_scale: 1.0            # 0.5 -> half resolution (faster downstream)
+crop: [0, 0, 0, 0]           # [x, y, w, h]; 0,0,0,0 = no crop
+output_encoding: bgr8        # bgr8 | rgb8 | mono8
+adjust_camera_info: true     # republish P/K consistent with crop/resize
+frame_id_override: ""        # keep input frame_id when empty
+diagnostics_topic: /camera_processing/statistics
+diagnostics_rate: 1.0

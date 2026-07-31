@@ -1,0 +1,15 @@
+<launch>
+  <!--
+    camera_processing.launch — camera pipeline (rectify/undistort/crop/resize).
+
+    Usage:
+      roslaunch camera_processing camera_processing.launch
+      roslaunch camera_processing camera_processing.launch rectify_mode:=undistort_rectify
+      roslaunch camera_processing camera_processing.launch resize_scale:=0.5
+  -->
+  <node name="camera_processing_node" pkg="camera_processing"
+        type="camera_processing_node.py" output="screen">
+    <rosparam file="$(find camera_processing)/config/camera_processing.yaml"
+              command="load"/>
+  </node>
+</launch>
