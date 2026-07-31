@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    occupancy_grid.launch — 2D occupancy grid node.
+
+    Usage:
+      roslaunch occupancy_grid occupancy_grid.launch
+  -->
+  <node name="occupancy_grid_node" pkg="occupancy_grid"
+        type="occupancy_grid_node.py" output="screen">
+    <rosparam file="$(find occupancy_grid)/config/occupancy_grid.yaml"
+              command="load"/>
+  </node>
+</launch>

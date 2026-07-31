@@ -1,0 +1,19 @@
+# occupancy_grid — private parameters (loaded by occupancy_grid.launch)
+obstacles_topic: /lidar_processing/obstacles
+pose_topic: /localization_pose
+fallback_odom_topic: /lidar_odometry
+use_localization: true        # false -> use fallback_odom_topic as the pose
+frame_id: map
+output_topic: /occupancy_grid
+
+resolution: 0.2               # meters per cell
+width_m: 60.0                 # grid width  [m] (centered on origin)
+height_m: 60.0                # grid height [m]
+l_occ: 0.85                   # log-odds per occupied hit
+l_free: 0.4                   # log-odds per free cell along the ray
+l_clamp: 3.5                  # log-odds clamp
+max_range: 50.0               # ignore points farther than this [m]
+
+queue_size: 20
+approx_slop: 0.1
+diagnostics_rate: 1.0
