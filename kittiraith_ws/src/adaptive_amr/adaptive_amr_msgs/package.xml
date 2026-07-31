@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>adaptive_amr_msgs</name>
+  <version>0.1.0</version>
+  <description>
+    Custom messages and services shared across adaptive_amr modules.
+    Created empty in Phase 2; message definitions are added when the modules
+    that use them land (ObjectTrackArray in Phase 4, DynamicObstacleArray in
+    Phase 6, etc.). A metapackage cannot define messages, hence this package.
+  </description>
+  <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>message_generation</buildtool_depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <exec_depend>message_runtime</exec_depend>
+</package>
