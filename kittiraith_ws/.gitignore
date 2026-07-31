@@ -1,0 +1,45 @@
+# ============================================================
+# kittiraith_ws .gitignore
+# Keep datasets, build artifacts, logs and IDE noise OUT of git.
+# ============================================================
+
+# ---- ROS / catkin build artifacts ---------------------------
+build/
+devel/
+install/
+.catkin_tools/
+.catkin_workspace
+logs/*
+!logs/.gitkeep
+*.log
+
+# ---- Python -------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ---- Data: never commit datasets or rosbags -----------------
+data/*
+!data/.gitkeep
+datasets/
+kitti_data/
+*.bag
+*.bag.active
+*.zip
+*.tar.gz
+
+# ---- Editors / OS -------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- Docker -------------------------------------------------
+.docker/

@@ -1,0 +1,16 @@
+# Keep the Docker build context small & deterministic
+.git
+build
+devel
+install
+logs
+data
+datasets
+*.bag
+*.zip
+__pycache__
+*.pyc
+.idea
+.vscode
+.pytest_cache
+.mypy_cache

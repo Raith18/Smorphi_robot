@@ -1,0 +1,74 @@
+# =============================================================================
+# kittiraith_ws — KITTI dataset manifest & conventions
+#
+# This YAML is the machine-readable single source of truth for dataset paths
+# and download URLs. Phase 1 scripts read the same values (as defaults/env
+# overrides); from Phase 2 on, the dataset_loader ROS package will load this
+# file directly (no hardcoded paths in code).
+# =============================================================================
+
+dataset:
+  root: /data/kitti            # default root; override with env KITTI_ROOT
+  kind: raw                    # raw | odometry
+
+  raw:
+    date: "2011_09_26"
+    drive: "2011_09_26_drive_0005"
+    structure: |
+      <root>/raw/<date>/<drive>_sync/
+        image_00/ image_01/ image_02/ image_03/   # KITTI cameras 0..3 (10 Hz jpg)
+        velodyne/                                 # Velodyne HDL-64E scans (.bin)
+        oxts/                                     # GPS/IMU combined log (.txt @100 Hz)
+        timestamps.txt                            # one ISO8601 stamp per frame
+      <root>/raw/<date>/<date>_calib/
+        calib_cam_to_cam.txt   # P0..P3, R_rect_00, S_00.., K, D
+        calib_velo_to_cam.txt  # R, T, delta_f, delta_c (velo -> cam 0)
+        calib_imu_to_velo.txt  # R, T (imu -> velo)
+
+  odometry:
+    sequences: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+    structure: |
+      <root>/odometry/sequences/<seq>/
+        image_00/ image_01/   # gray (or color) stereo, 10 Hz png
+        velodyne/             # .bin scans
+        calib.txt             # P0..P3, Tr, R0_rect (cam0-relative)
+        times.txt             # per-frame times
+      <root>/odometry/poses/<seq>.txt   # ground-truth poses (3x4, cam0 frame)
+
+downloads:
+  base_url: https://s3.eu-central-1.amazonaws.com/avg-kitti
+  sample:                       # fetched by scripts/04_download_kitti_sample.sh
+    - name: "2011_09_26_calib.zip"
+      url: "raw_data/2011_09_26/2011_09_26_calib.zip"
+      size_mb: 16
+    - name: "2011_09_26_drive_0005_sync.zip"
+      url: "raw_data/2011_09_26/2011_09_26_drive_0005_sync.zip"
+      size_mb: 1100
+  full_odometry:                # reference for later phases (large!)
+    - name: data_odometry_color.zip
+      url: odometry/data_odometry_color.zip
+      size_gb: 7.4
+    - name: data_odometry_gray.zip
+      url: odometry/data_odometry_gray.zip
+      size_gb: 4.2
+    - name: data_odometry_velodyne.zip
+      url: odometry/data_odometry_velodyne.zip
+      size_gb: 29.0
+    - name: data_odometry_calib.zip
+      url: odometry/data_odometry_calib.zip
+      size_gb: 0.02
+    - name: data_odometry_poses.zip
+      url: odometry/data_odometry_poses.zip
+      size_gb: 0.005
+
+frame_rates_hz:
+  camera: 10          # image_00..03 publish at 10 Hz (raw sync drives)
+  velodyne: 10        # velodyne scans at 10 Hz
+  oxts: 100           # oxts logged at 100 Hz; Phase 2 down-samples/syncs to 10 Hz
+  imu: 100
+
+notes: |
+  - KITTI is licensed for academic/research use; register at https://www.cvlibs.net/datasets/kitti/
+  - Never commit dataset files or rosbags to git (.gitignore enforces this).
+  - Phase 2 replays this data either via kitti2bag -> rosbag, or directly with
+    the dataset_loader package streaming files -> ROS topics.
