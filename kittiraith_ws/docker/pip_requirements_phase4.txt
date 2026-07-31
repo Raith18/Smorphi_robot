@@ -1,0 +1,13 @@
+# kittiraith_ws — Phase 4 Python dependencies (Detection / Segmentation)
+# CPU-first by design (user hardware: integrated graphics, ~2 GB shared RAM).
+# Install with the CPU wheel index so torch pulls the CPU build:
+#
+#   pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+#       -r docker/pip_requirements_phase4.txt
+#
+# GPU machines: install the matching CUDA build instead, e.g.
+#   pip install torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cu121
+
+torch==2.2.2
+torchvision==0.17.2
+ultralytics>=8.2.0,<8.4.0

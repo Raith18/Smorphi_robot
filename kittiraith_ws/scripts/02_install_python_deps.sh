@@ -29,6 +29,12 @@ REQ_FILE="${PROJECT_ROOT}/docker/pip_requirements_phase1.txt"
 main() {
   info "=== kittiraith_ws | Step 02: Python dependencies ==="
 
+  WITH_PHASE4=0
+  [[ "${1:-}" == "--with-phase4" ]] && WITH_PHASE4=1
+  if [[ "${WITH_PHASE4}" -eq 1 ]]; then
+    info "Including Phase 4 dependencies (torch CPU + ultralytics)."
+  fi
+
   command -v python3 >/dev/null 2>&1 || fail "python3 not found. Install ROS Noetic first (step 00)."
   PY_VERSION="$(python3 --version 2>&1 | awk '{print $2}')"
   info "Using $(python3 --version)"
@@ -49,11 +55,20 @@ main() {
     info "Virtual environment active: $(which python3)"
     python3 -m pip install --upgrade pip >> "${LOG_FILE}" 2>&1
     python3 -m pip install -r "${REQ_FILE}" 2>&1 | tee -a "${LOG_FILE}"
+    if [[ "${WITH_PHASE4}" -eq 1 ]]; then
+      python3 -m pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r "${PROJECT_ROOT}/docker/pip_requirements_phase4.txt" 2>&1 | tee -a "${LOG_FILE}"
+    fi
     info "Activate with: source ${VENV_DIR}/bin/activate"
   else
     warn "python3-venv unavailable — installing with 'pip3 install --user'."
     python3 -m pip install --user --upgrade pip >> "${LOG_FILE}" 2>&1 || true
     python3 -m pip install --user -r "${REQ_FILE}" 2>&1 | tee -a "${LOG_FILE}"
+    if [[ "${WITH_PHASE4}" -eq 1 ]]; then
+      python3 -m pip install --user \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r "${PROJECT_ROOT}/docker/pip_requirements_phase4.txt" 2>&1 | tee -a "${LOG_FILE}"
+    fi
   fi
 
   info "Python dependencies installed. Log: ${LOG_FILE}"

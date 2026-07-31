@@ -29,11 +29,12 @@ GIT_EMAIL="$(git config user.email 2>/dev/null || true)"
 MAINTAINER_NAME="${GIT_NAME:-Raith18}"
 MAINTAINER_EMAIL="${GIT_EMAIL:-186810016+Raith18@users.noreply.github.com}"
 
-# --- The 20 module packages (one per pipeline module) -------------------------
+# --- Module packages (one per pipeline module) ---------------------------------
+# depth_estimation was added in Phase 4 (spec: Depth Estimation).
 MODULES=(
   camera_node lidar_node gps_node imu_node dataset_loader time_sync
   camera_processing lidar_processing calibration sensor_fusion
-  object_detection semantic_segmentation object_tracking
+  object_detection semantic_segmentation object_tracking depth_estimation
   visual_odometry lidar_odometry localization semantic_mapping
   occupancy_grid motion_prediction navigation_layer
 )

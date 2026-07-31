@@ -42,6 +42,13 @@ COPY docker/pip_requirements_phase1.txt /tmp/pip_requirements_phase1.txt
 RUN python3 -m pip install --no-cache-dir -r /tmp/pip_requirements_phase1.txt \
     && rm -f /tmp/pip_requirements_phase1.txt
 
+# --- Phase 4: YOLOv8 detection/segmentation (CPU wheels, ~1.5 GB) --------------
+COPY docker/pip_requirements_phase4.txt /tmp/pip_requirements_phase4.txt
+RUN python3 -m pip install --no-cache-dir \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r /tmp/pip_requirements_phase4.txt \
+    && rm -f /tmp/pip_requirements_phase4.txt
+
 # --- Non-root developer user ---------------------------------------------------
 ARG USERNAME=ros
 ARG USER_UID=1000
