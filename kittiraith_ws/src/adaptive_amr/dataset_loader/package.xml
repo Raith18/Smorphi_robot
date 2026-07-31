@@ -2,11 +2,22 @@
 <package format="2">
   <name>dataset_loader</name>
   <version>0.1.0</version>
-  <description>dataset_loader: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    KITTI dataset loading infrastructure: pure parsers (calibration, oxts,
+    timestamps, velodyne), ROS message builders, a real-time file->topic player
+    helper and an offline kitti_to_bag converter. Shared by all sensor driver
+    nodes (camera_node, lidar_node, gps_node, imu_node).
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2_msgs</depend>
+  <depend>rosbag</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 </package>

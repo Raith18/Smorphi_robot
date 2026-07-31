@@ -1,0 +1,49 @@
+<launch>
+  <!--
+    kitti_player.launch — starts the four KITTI sensor "drivers" together.
+
+    Each node independently paces itself from the shared timestamps file, so
+    all four topics carry identical stamps (required for exact time sync).
+
+    Usage:
+      roslaunch dataset_loader kitti_player.launch
+      roslaunch dataset_loader kitti_player.launch rate:=0          # fast
+      roslaunch dataset_loader kitti_player.launch rate:=0.5        # slow-mo
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+
+  <!-- Camera driver -->
+  <include file="$(find camera_node)/launch/camera_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+
+  <!-- LiDAR driver -->
+  <include file="$(find lidar_node)/launch/lidar_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+
+  <!-- GPS driver -->
+  <include file="$(find gps_node)/launch/gps_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+
+  <!-- IMU driver -->
+  <include file="$(find imu_node)/launch/imu_node.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+  </include>
+</launch>
