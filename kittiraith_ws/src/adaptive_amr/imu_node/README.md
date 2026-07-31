@@ -1,61 +1,77 @@
 # imu_node
 
-| Phase | Status |
-|---|---|
-| Implementation | Pending (see phase roadmap in the root README) |
+> **Phase 2 — ✅ implemented**
 
-## Objective
-<!-- Filled in during the implementation phase. -->
+## 1. Objective
+Replay the inertial part of KITTI OXTS data as `sensor_msgs/Imu` on
+`/imu/data`, like a real IMU driver.
 
-## Theory
-<!-- Mathematical formulation, algorithms, alternatives. -->
+## 2. Theory
+OXTS provides fused roll/pitch/yaw (GPS-aided INS), angular rates
+(`wx, wy, wz` rad/s) and accelerations (`ax, ay, az` m/s²) in the
+vehicle/IMU frame (x forward, y left, z up). The node publishes all three in
+`sensor_msgs/Imu` with engineering-estimated covariances (tunable in YAML).
 
-## Industrial importance
-<!-- Why warehouse/AMR companies need this module. -->
+## 3. Industrial importance
+IMUs give the highest-rate motion data (100-1000 Hz on real robots) and
+bridge GPS outages; they are the backbone of every localization filter.
 
-## Folder structure
+## 4. Folder structure
 ```
 imu_node/
-├── src/          # C++ / Python sources
-├── launch/       # launch files
-├── config/       # YAML parameters
-├── rviz/         # RViz display configs
-└── test/         # unit/integration tests
+├── package.xml  CMakeLists.txt
+├── scripts/imu_node.py
+├── launch/imu_node.launch
+└── config/imu_node.yaml
 ```
 
-## ROS topics (planned)
-<!-- /topic_name  (MsgType)  publisher|subscriber  — description -->
+## 5. Required packages
+`rospy sensor_msgs dataset_loader`
 
-## TF frames (planned)
-<!-- parent -> child  — description -->
+## 6-8. ROS topics
+| Topic | Type | Dir |
+|---|---|---|
+| `/imu/data` | `sensor_msgs/Imu` | pub (frame `imu_link`) |
 
-## Parameters (planned)
-<!-- name (type, default) — description -->
+## 9. Parameters
+`dataset_root, date, drive, imu_topic, frame_id, rate_factor, loop`
 
-## Launch (planned)
+## 10. Configuration
+`config/imu_node.yaml` — all of the above.
+
+## 11. Python classes
+`ImuNode` — OXTS reader + `Imu` builder (shared `build_imu_msg`).
+
+## 12. Launch
 ```bash
 roslaunch imu_node imu_node.launch
 ```
 
-## Testing procedure
-<!-- How to verify the module on KITTI data. -->
-
-## Expected outputs
-<!-- Topics/plots/metrics to expect. -->
-
-## Performance metrics
-<!-- Latency, throughput, accuracy, resource usage. -->
-
-## Debugging guide
-<!-- rqt_graph, rostopic, rosbag, gdb... -->
-
-## Common errors
-<!-- Symptom -> cause -> fix. -->
-
-## Improvements
-<!-- Future work. -->
-
-## Git commit message (suggested)
+## 13. Testing procedure
+```bash
+rostopic echo -n1 /imu/data | grep -A2 orientation
+# quaternion norm should be ~1.0; angular_velocity ~ 0.005 rad/s at standstill
 ```
-feat(imu_node): <what was implemented>
-```
+
+## 14. RViz configuration
+`adaptive_amr/rviz/kitti_sensors.rviz` — TF axes show IMU orientation.
+
+## 15. Expected outputs
+10 Hz `Imu` messages, normalized quaternion, gravity-free accelerations.
+
+## 16. Performance metrics
+Trivial (one line per frame). Real robots: 100-1000 Hz streams.
+
+## 17. Debugging guide
+Non-unit quaternion → parser bug (run unit tests); NaN → missing OXTS values.
+
+## 18. Common errors
+Orientation flips between +/− → Euler convention mismatch — the project uses
+`R = Rz(yaw)·Ry(pitch)·Rx(roll)` (matches KITTI devkit).
+
+## 19. Improvements
+Bias/scale modeling, gravity compensation toggle, raw-vs-filtered topics,
+100 Hz interpolation (oxts unsync data).
+
+## 20. Git commit
+`feat(imu_node): add KITTI IMU driver node (sensor_msgs/Imu)`

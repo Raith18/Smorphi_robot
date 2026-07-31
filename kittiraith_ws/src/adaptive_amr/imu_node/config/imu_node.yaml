@@ -1,0 +1,5 @@
+# imu_node — private parameters (loaded by imu_node.launch)
+imu_topic: /imu/data
+frame_id: imu_link
+rate_factor: 1.0            # 1.0 real time, >1 faster, 0 = as fast as possible
+loop: false
