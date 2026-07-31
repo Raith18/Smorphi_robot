@@ -54,7 +54,7 @@ can be validated against ground truth and compared with published results.
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ✅ **Done** |
 | **8** | Performance Benchmarking · Profiling · Optimization | ✅ **Done** |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ✅ **Done** |
-| **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Next |
+| **10** | Technical Documentation · Research-style Report (demo videos not required) | ✅ **Done** |
 | **9** | Docker · CI/CD · Unit Testing · Integration Testing | ⏳ Pending |
 | **10** | Technical Documentation · Demo Videos · GitHub Portfolio · Research-style Report | ⏳ Pending |
 
@@ -226,9 +226,14 @@ git clone <your-fork-url> && cd kittiraith_ws
 
 | Document | Contents |
 |---|---|
-| `docs/phase1_development_environment.md` | Full Phase 1 tutorial: theory, steps, testing, debugging, interview questions |
+| `docs/RESEARCH_REPORT.md` | **Full research-style report**: abstract, architecture, per-module math, measured results, future work |
+| `docs/api_reference.md` | Machine-generated API reference (all 22 packages) — regenerate with `scripts/docs/generate_api_docs.py` |
+| `docs/MODULE_REFERENCE.md` | Consolidated 25-point spec for every module |
+| `docs/GLOSSARY.md` | Terminology index |
+| `docs/TROUBLESHOOTING.md` | Consolidated debugging & FAQ |
 | `docs/architecture_overview.md` | System architecture, TF tree, ROS graph, data flow |
-| Per-module `README.md` (in `src/adaptive_amr/<module>/`) | 25-point module spec (objective → docs) |
+| `docs/phase1..9_*.md` | Phase tutorials: theory, math, implementation, testing, debugging, interview questions |
+| Per-module `README.md` (in `src/adaptive_amr/<module>/`) | 25-point module spec (objective → documentation) |
 
 ---
 
