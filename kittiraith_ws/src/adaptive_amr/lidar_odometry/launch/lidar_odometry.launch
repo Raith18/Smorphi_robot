@@ -1,0 +1,14 @@
+<launch>
+  <!--
+    lidar_odometry.launch — LiDAR odometry (scan-to-scan ICP).
+
+    Usage:
+      roslaunch lidar_odometry lidar_odometry.launch
+      roslaunch lidar_odometry lidar_odometry.launch icp_method:=point_to_point
+  -->
+  <node name="lidar_odometry_node" pkg="lidar_odometry"
+        type="lidar_odometry_node.py" output="screen">
+    <rosparam file="$(find lidar_odometry)/config/lidar_odometry.yaml"
+              command="load"/>
+  </node>
+</launch>

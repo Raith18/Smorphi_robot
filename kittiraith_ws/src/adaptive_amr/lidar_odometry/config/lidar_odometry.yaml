@@ -1,0 +1,15 @@
+# lidar_odometry — private parameters (loaded by lidar_odometry.launch)
+points_topic: /velodyne_points
+output_topic: /lidar_odometry
+odom_frame: odom
+base_frame: base_link
+enable_tf: true              # publish TF odom -> base_link
+
+voxel_leaf: 0.5              # downsample leaf [m] before ICP
+icp_method: point_to_plane   # point_to_plane (default) | point_to_point
+max_iterations: 40
+max_correspondence_distance: 2.0
+tolerance: 0.0000001
+min_points: 1000             # skip scans with fewer points after downsample
+
+diagnostics_rate: 1.0
