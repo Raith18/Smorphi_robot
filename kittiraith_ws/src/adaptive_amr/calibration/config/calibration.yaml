@@ -1,0 +1,10 @@
+# calibration — private parameters (loaded by calibration.launch)
+camera_info_ns: /camera
+publish_placeholders: true     # identity map->odom / odom->base_link TFs
+map_frame: map
+odom_frame: odom
+base_frame: base_link
+laser_frame: laser
+camera_frame: camera_link
+camera_optical_frame: camera_optical_frame
+imu_frame: imu_link

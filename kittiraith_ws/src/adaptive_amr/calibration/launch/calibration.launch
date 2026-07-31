@@ -1,0 +1,18 @@
+<launch>
+  <!--
+    calibration.launch — KITTI calibration server (CameraInfo + static TF).
+
+    Usage:
+      roslaunch calibration calibration.launch
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+
+  <node name="calibration_node" pkg="calibration" type="calibration_node.py" output="screen">
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <rosparam file="$(find calibration)/config/calibration.yaml" command="load"/>
+  </node>
+</launch>
