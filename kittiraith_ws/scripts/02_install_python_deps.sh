@@ -53,7 +53,8 @@ main() {
     # shellcheck disable=SC1091
     source "${VENV_DIR}/bin/activate"
     info "Virtual environment active: $(which python3)"
-    python3 -m pip install --upgrade pip >> "${LOG_FILE}" 2>&1
+    python3 -m pip install --upgrade pip >> "${LOG_FILE}" 2>&1 \
+      || warn "pip self-upgrade failed (continuing with existing pip)"
     python3 -m pip install -r "${REQ_FILE}" 2>&1 | tee -a "${LOG_FILE}"
     if [[ "${WITH_PHASE4}" -eq 1 ]]; then
       python3 -m pip install --extra-index-url https://download.pytorch.org/whl/cpu \

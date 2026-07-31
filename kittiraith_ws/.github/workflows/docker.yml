@@ -1,0 +1,22 @@
+# =============================================================================
+# kittiraith_ws — scheduled Docker image validation.
+# Builds the ROS Noetic development image weekly (and on demand) to catch
+# base-image / dependency drift early.
+# =============================================================================
+name: Docker
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"   # every Monday 03:00 UTC
+
+jobs:
+  build:
+    name: Build kittiraith_ws image
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build the ROS Noetic development image
+        run: docker build -t kittiraith_ws:nightly -f docker/Dockerfile .

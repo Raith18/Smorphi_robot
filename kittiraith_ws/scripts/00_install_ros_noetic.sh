@@ -30,6 +30,9 @@ log()   { echo "[$(date '+%F %T')] $*" >> "${LOG_FILE}"; }
 # Use sudo only when not root.
 if [[ "${EUID}" -eq 0 ]]; then SUDO=(); else SUDO=(sudo); fi
 
+# Non-interactive apt (stability: never block on debconf prompts).
+export DEBIAN_FRONTEND=noninteractive
+
 # --- 1. Verify OS ------------------------------------------------------------
 check_os() {
   if [[ ! -f /etc/os-release ]]; then
@@ -49,7 +52,7 @@ check_os() {
 # --- 2. Base packages --------------------------------------------------------
 install_base_tools() {
   info "Installing base tools (curl, gnupg2, lsb-release, software-properties-common)..."
-  "${SUDO[@]}" apt-get update >> "${LOG_FILE}" 2>&1 || { tail -20 "${LOG_FILE}"; fail "apt-get update failed."; }
+  "${SUDO[@]}" apt-get update --fix-missing >> "${LOG_FILE}" 2>&1 || { tail -20 "${LOG_FILE}"; fail "apt-get update failed."; }
   "${SUDO[@]}" apt-get install -y --no-install-recommends \
     curl gnupg2 lsb-release software-properties-common \
     >> "${LOG_FILE}" 2>&1 || { tail -20 "${LOG_FILE}"; fail "Base tool installation failed."; }

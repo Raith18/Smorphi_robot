@@ -19,6 +19,8 @@ from message_filters import ApproximateTimeSynchronizer, Subscriber
 from nav_msgs.msg import Odometry, OccupancyGrid
 from sensor_msgs.msg import PointCloud2
 
+from tf2_ros import Buffer, TransformListener
+
 from dataset_loader.player_utils import pointcloud2_to_arrays
 from occupancy_grid.grid_mapping import OccupancyGridMapper
 
@@ -26,6 +28,27 @@ from occupancy_grid.grid_mapping import OccupancyGridMapper
 def _pose_to_xy(pose) -> tuple:
     """geometry_msgs/Pose -> (x, y) in the grid frame."""
     return pose.position.x, pose.position.y
+
+
+def _transform_matrix(t) -> np.ndarray:
+    """geometry_msgs/Transform -> 4x4 matrix."""
+    q = t.rotation
+    x, y, z, w = q.x, q.y, q.z, q.w
+    R = np.array([
+        [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+        [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+        [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)],
+    ])
+    T = np.eye(4)
+    T[:3, :3] = R
+    T[:3, 3] = [t.translation.x, t.translation.y, t.translation.z]
+    return T
+
+
+def _apply_transform(points: np.ndarray, T: np.ndarray) -> np.ndarray:
+    """Apply a 4x4 rigid transform to (N, >=3) points."""
+    hom = np.hstack([points[:, :3], np.ones((points.shape[0], 1))])
+    return (T @ hom.T).T[:, :3]
 
 
 class OccupancyGridNode:
@@ -53,6 +76,10 @@ class OccupancyGridNode:
             l_clamp=rospy.get_param("~l_clamp", 3.5))
         self.max_range = rospy.get_param("~max_range", 50.0)
         self.diagnostics_rate = rospy.get_param("~diagnostics_rate", 1.0)
+
+        # TF: transform obstacle points (laser frame) into the map frame
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer)
 
         # ---- ROS ------------------------------------------------------------------
         self.pub_grid = rospy.Publisher(self.output_topic, OccupancyGrid,
@@ -82,6 +109,21 @@ class OccupancyGridNode:
         start = rospy.Time.now()
         arrays = pointcloud2_to_arrays(points)
         xyz = np.column_stack([arrays["x"], arrays["y"], arrays["z"]])
+
+        # ---- frame discipline: obstacles are in the cloud's frame (laser),
+        #      the grid lives in the map frame. Transform, falling back to
+        #      identity (with a warning) when the TF is unavailable.
+        try:
+            stamped = self.tf_buffer.lookup_transform(
+                self.frame_id, points.header.frame_id, points.header.stamp,
+                timeout=rospy.Duration(0.5))
+            xyz = _apply_transform(xyz, _transform_matrix(stamped.transform))
+        except Exception:  # noqa: BLE001 - tf can raise several types
+            rospy.logwarn_throttle(
+                5.0, "occupancy_grid: TF %s -> %s unavailable, "
+                     "assuming identity (grid may smear)",
+                     points.header.frame_id, self.frame_id)
+
         robot_x, robot_y = _pose_to_xy(pose_msg.pose.pose)
 
         self.mapper.add_scan(xyz[:, :2], robot_x, robot_y,

@@ -1,0 +1,76 @@
+# =============================================================================
+# kittiraith_ws CI — runs on every push and pull request.
+#
+# All checks are ROS-free (the algorithm cores are pure Python), so CI runs
+# fast on a hosted runner. The full ROS stack + Docker image build are
+# validated in docker.yml (manual/scheduled, ~20 min).
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+
+jobs:
+  verify:
+    name: Lint + unit + integration + smoke
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.8 (ROS Noetic target)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+          cache: pip
+
+      - name: Install test dependencies (CPU-only, no torch)
+        run: |
+          pip install --upgrade pip
+          pip install numpy scipy opencv-python-headless pyyaml
+
+      - name: Shell syntax check
+        run: |
+          set -e
+          while IFS= read -r -d '' f; do bash -n "$f"; done \
+            < <(find . -name '*.sh' -not -path './.git/*' -not -path '*/.venv/*' -print0)
+          echo "OK: all shell scripts pass bash -n"
+
+      - name: Python compile check
+        run: |
+          set -e
+          while IFS= read -r -d '' f; do python -m py_compile "$f"; done \
+            < <(find . -name '*.py' -not -path './.git/*' -not -path '*/.venv/*' -print0)
+          echo "OK: all python sources compile"
+
+      - name: XML + YAML validity
+        run: python scripts/ci/check_xml_yaml.py
+
+      - name: Unit tests (all packages)
+        run: bash tests/run_unit_tests.sh
+
+      - name: Integration test (headless pipeline)
+        run: bash tests/run_integration_tests.sh
+
+      - name: Phase smoke tests
+        run: bash tests/run_all_smoke.sh
+
+      - name: CPU profiler (latency budget sanity)
+        run: python src/adaptive_amr/evaluation/scripts/profile.py --repeats 2
+
+  docker:
+    name: Docker image build
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[docker]')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build the ROS Noetic development image
+        run: |
+          docker build -t kittiraith_ws:ci -f docker/Dockerfile .
+
+      - name: Validate docker-compose config
+        run: docker compose -f docker/docker-compose.yml config > /dev/null

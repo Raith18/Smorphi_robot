@@ -128,9 +128,17 @@ class OccupancyGridMapper:
             if max_n < 1:
                 continue
 
-            t = np.linspace(0.0, 1.0, max_n)                     # (max_n,)
+            # IMPORTANT: sample each ray on ITS OWN spacing, so that every
+            # ray's LAST sample is exactly t=1 (the endpoint). A global
+            # linspace(0,1,max_n) would leave short rays short of their
+            # endpoint (their t=1 lies beyond max_n) — silently dropping the
+            # occupied hit of every obstacle closer than the farthest one.
+            # (This exact regression was introduced by the Phase 8 vectorized
+            #  rewrite and caught by the Phase 9 integration test.)
+            t_mat = (np.arange(max_n)[None, :]
+                     / np.maximum(n_samples[:, None] - 1, 1))    # (N, max_n)
             samples = (origin[None, :]
-                       + dirs[:, None, :] * t[None, :, None])    # (N, max_n, 2)
+                       + dirs[:, None, :] * t_mat[:, :, None])   # (N, max_n, 2)
             cols = np.floor(samples[..., 0] / self.resolution).astype(int) \
                 + self.half_w
             rows = np.floor(samples[..., 1] / self.resolution).astype(int) \
