@@ -1,0 +1,51 @@
+<launch>
+  <!--
+    phase4_perception.launch — Phase 2+3 stack + detection, tracking,
+    semantic segmentation and depth estimation.
+
+    Starts (on top of phase3):
+      object_detection        -> /object_detections (+ annotated image)
+      object_tracking         -> /object_tracks
+      semantic_segmentation   -> /semantic_map{,/colored,/colored_points}
+      depth_estimation        -> /depth/dense + /depth/colored
+
+    Usage:
+      roslaunch adaptive_amr phase4_perception.launch
+      roslaunch adaptive_amr phase4_perception.launch rate:=0
+      roslaunch adaptive_amr phase4_perception.launch \
+          dataset_root:=$(pwd)/data/kitti
+
+    Notes:
+      * First run downloads yolov8n.pt + yolov8n-seg.pt (~12 MB, needs
+        internet). Override with `model:=` args if you have local weights.
+      * CPU inference by default (device:=cpu).
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="sync_type" default="exact"/>
+
+  <!-- Phase 2 + 3 base stack -->
+  <include file="$(find adaptive_amr)/launch/phase3_pipelines.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+
+  <!-- Phase 4 perception -->
+  <include file="$(find object_detection)/launch/object_detection.launch">
+    <arg name="dataset_root" value="$(arg dataset_root)"/>
+    <arg name="date" value="$(arg date)"/>
+    <arg name="drive" value="$(arg drive)"/>
+    <arg name="sync_type" value="$(arg sync_type)"/>
+  </include>
+
+  <include file="$(find object_tracking)/launch/object_tracking.launch"/>
+
+  <include file="$(find semantic_segmentation)/launch/semantic_segmentation.launch"/>
+
+  <include file="$(find depth_estimation)/launch/depth_estimation.launch"/>
+</launch>

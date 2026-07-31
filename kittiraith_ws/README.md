@@ -48,8 +48,8 @@ can be validated against ground truth and compared with published results.
 | **1** | Development Environment · ROS Workspace · Git · Docker · Dataset Management | ✅ **Done** |
 | **2** | KITTI ROS Player · Time Synchronization · Calibration · Sensor Drivers | ✅ **Done** |
 | **3** | Camera Pipeline · LiDAR Pipeline · Fusion Pipeline | ✅ **Done** |
-| **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ⏳ Next |
-| **5** | Visual SLAM · LiDAR SLAM · Sensor-Fusion Localization | ⏳ Pending |
+| **4** | Detection · Tracking · Semantic Segmentation · Depth Estimation | ✅ **Done** |
+| **5** | Visual SLAM · LiDAR SLAM · Sensor-Fusion Localization | ⏳ Next |
 | **6** | Semantic Mapping · Dynamic Occupancy Grid · Motion Prediction | ⏳ Pending |
 | **7** | Navigation Layer · Behavior Layer · Decision Layer | ⏳ Pending |
 | **8** | Performance Benchmarking · Profiling · Optimization | ⏳ Pending |
@@ -83,6 +83,21 @@ rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase3_fusion.rviz
 #   - obstacles (red) vs ground (green), 3D cluster boxes
 #   - fusion overlay + sparse depth image
 rostopic hz /camera/image_rect /lidar_processing/obstacles /fusion/sparse_depth
+```
+
+### Phase 4 quick demo
+
+```bash
+# first run downloads yolov8n.pt + yolov8n-seg.pt (internet required, ~12 MB)
+roslaunch adaptive_amr phase4_perception.launch rate:=1
+# new terminal:
+rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase4_perception.rviz
+#   - YOLOv8 detections with fused depth on the annotated image
+#   - SORT tracks with stable IDs (markers)
+#   - semantic map colored + semantic-colored LiDAR cloud
+#   - dense depth image (LiDAR depth completed everywhere)
+rostopic hz /object_detections /object_tracks /semantic_map /depth/dense
+# CPU-only stack: if 10 Hz is too much for your CPU, use rate:=0.5 or imgsz:=416
 ```
 
 ---

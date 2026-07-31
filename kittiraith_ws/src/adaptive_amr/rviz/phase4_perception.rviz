@@ -1,0 +1,91 @@
+# =============================================================================
+# phase4_perception.rviz — Phase 4 perception visualization
+# Open with:
+#   rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase4_perception.rviz
+# Shows: detection image, tracks, semantic map, dense depth, colored LiDAR.
+# =============================================================================
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 30
+      Line Style: Lines
+      Color: 160; 160; 164
+      Alpha: 0.5
+
+    - Class: rviz/TF
+      Name: TF (frames)
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 1.0
+      Show Names: true
+      Show Arrows: true
+
+    - Class: rviz/Image
+      Name: Detections (YOLOv8)
+      Enabled: true
+      Image Topic: /object_detections/image
+      Transport Hint: raw
+
+    - Class: rviz/Image
+      Name: Semantic map (colored)
+      Enabled: true
+      Image Topic: /semantic_map/colored
+      Transport Hint: raw
+
+    - Class: rviz/Image
+      Name: Dense depth (colored)
+      Enabled: true
+      Image Topic: /depth/colored
+      Transport Hint: raw
+
+    - Class: rviz/PointCloud2
+      Name: Semantic colored points
+      Enabled: true
+      Topic: /semantic_map/colored_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: Colored LiDAR (fusion)
+      Enabled: false
+      Topic: /fusion/colored_points
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: RGB8
+      Use Fixed Frame: true
+
+    - Class: rviz/MarkerArray
+      Name: Tracks (2D)
+      Enabled: true
+      Topic: /object_tracks/markers
+
+    - Class: rviz/MarkerArray
+      Name: LiDAR boxes
+      Enabled: false
+      Topic: /lidar_processing/boxes
+
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Orbit
+      Distance: 30
+      Focal Point: [0, 0, 0]
+      Pitch: 0.5
+      Yaw: -0.5
+      Target Frame: map
