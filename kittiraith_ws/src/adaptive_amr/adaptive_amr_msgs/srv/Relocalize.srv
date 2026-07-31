@@ -1,0 +1,5 @@
+# Relocalize.srv — trigger re-localization of the ICP localizer
+bool restart_mapping      # true: also rebuild the map from scratch
+---
+bool success              # true if the relocalization was accepted
+string message            # human-readable status

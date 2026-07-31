@@ -125,6 +125,7 @@ numpy scipy opencv-python` (no new heavy deps — CPU-friendly)
 | `/lidar_odometry` · `/lidar_odometry/path` | `nav_msgs/Odometry` · `Path` | lidar_odometry |
 | `/localization_pose` | `PoseWithCovarianceStamped` | localization |
 | `/localization/map` | `PointCloud2` | localization |
+| `/localization/relocalize` | `adaptive_amr_msgs/Relocalize` (service) | localization |
 | `/visual_odometry/statistics`, `/lidar_odometry/statistics`, `/localization/statistics` | `DiagnosticArray` | each node |
 | `/tf` (odom→base_link, map→odom) | `TFMessage` | odometry/localization nodes |
 

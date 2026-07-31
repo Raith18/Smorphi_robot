@@ -35,7 +35,7 @@ sensor_fusion numpy opencv-python torch torchvision ultralytics`
 ## 6-8. ROS topics
 | Topic | Type | Dir |
 |---|---|---|
-| `/semantic_map` | `sensor_msgs/Image` (uint8 labels) | pub |
+| `/semantic_map/labels` | `sensor_msgs/Image` (uint8 labels) | pub |
 | `/semantic_map/colored` | `sensor_msgs/Image` (bgr8) | pub |
 | `/semantic_map/colored_points` | `sensor_msgs/PointCloud2` (rgb) | pub |
 | `/semantic_map/statistics` | `DiagnosticArray` | pub |
@@ -58,7 +58,7 @@ roslaunch semantic_segmentation semantic_segmentation.launch
 ```bash
 python3 src/adaptive_amr/semantic_segmentation/test/test_segmentation_utils.py
 # live:
-rostopic hz /semantic_map
+rostopic hz /semantic_map/labels
 ```
 
 ## 14. RViz configuration

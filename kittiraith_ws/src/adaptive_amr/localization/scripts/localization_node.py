@@ -34,6 +34,7 @@ from dataset_loader.player_utils import (build_point_cloud2_from_arrays,
                                          pointcloud2_to_arrays)
 from lidar_processing.filters import VoxelGrid
 from localization.icp_localizer import IcpLocalizer, transform_points
+from adaptive_amr_msgs.srv import Relocalize, RelocalizeResponse
 
 
 def odom_to_matrix(msg: Odometry) -> np.ndarray:
@@ -96,10 +97,36 @@ class LocalizationNode:
         rospy.Timer(rospy.Duration(1.0 / max(self.diagnostics_rate, 0.1)),
                     self._publish_statistics)
 
+        # ---- service: trigger re-localization ----------------------------------
+        self.srv_relocalize = rospy.Service(
+            "/localization/relocalize", Relocalize, self._on_relocalize)
+
         self.frame_count = 0
         self.last_process_ms = 0.0
         rospy.loginfo("localization: %s + %s (mapping until %d pts)",
                       self.points_topic, self.odom_topic, self.min_map_points)
+
+    # ------------------------------------------------------------------ #
+    def _on_relocalize(self, req) -> RelocalizeResponse:
+        """
+        Relocalize: reset the ICP correction (and optionally the whole map).
+
+        Industrial use: after a kidnapping event (robot picked up and moved),
+        a supervisor calls this service to force the localizer back into a
+        known state instead of trusting a drifted pose.
+        """
+        if req.restart_mapping:
+            self.localizer.reset()
+            self.frame_count = 0
+            message = ("map reset and relocalization started (mapping phase)")
+        else:
+            # keep the map, but re-anchor the pose at the odometry prior
+            self.localizer.T_map_odom = np.eye(4)
+            self.localizer.last_correction = np.eye(4)
+            message = ("relocalized: map->odom reset to identity "
+                       "(pose = odometry prior)")
+        rospy.loginfo("localization: relocalize requested -> %s", message)
+        return RelocalizeResponse(success=True, message=message)
 
     # ------------------------------------------------------------------ #
     def _on_synced(self, points: PointCloud2, odom: Odometry) -> None:

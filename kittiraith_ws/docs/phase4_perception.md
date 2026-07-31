@@ -13,7 +13,7 @@ file, testing procedure, debugging, performance and interview questions.
 |---|---|---|
 | 2D detection | `object_detection` | image + LiDAR → `/object_detections` (boxes, classes, fused 3D depth) |
 | Multi-object tracking | `object_tracking` | detections → `/object_tracks` (stable IDs) |
-| Semantic segmentation | `semantic_segmentation` | image + LiDAR → `/semantic_map` (labels + colored points) |
+| Semantic segmentation | `semantic_segmentation` | image + LiDAR → `/semantic_map/labels` + colored points |
 | Depth estimation | `depth_estimation` | sparse LiDAR depth → `/depth/dense` (dense depth) |
 
 **Design constraint (your hardware):** no dedicated GPU — everything runs on
@@ -140,7 +140,7 @@ numpy scipy opencv-python torch torchvision ultralytics`
 | `/object_detections/image` | `Image` | object_detection |
 | `/object_tracks` | `adaptive_amr_msgs/ObjectTrackArray` | object_tracking |
 | `/object_tracks/markers` | `MarkerArray` | object_tracking |
-| `/semantic_map` (uint8) / `/semantic_map/colored` (bgr8) | `Image` | semantic_segmentation |
+| `/semantic_map/labels` (uint8) / `/semantic_map/colored` (bgr8) | `Image` | semantic_segmentation |
 | `/semantic_map/colored_points` | `PointCloud2` (rgb) | semantic_segmentation |
 | `/depth/dense` (32FC1) / `/depth/colored` (bgr8) | `Image` | depth_estimation |
 | `…/statistics` | `DiagnosticArray` | all four |
@@ -173,7 +173,7 @@ python3 src/adaptive_amr/depth_estimation/test/test_depth_completion.py       # 
 
 # live (Ubuntu 20.04 + deps)
 roslaunch adaptive_amr phase4_perception.launch rate:=1 &
-rostopic hz /object_detections /object_tracks /semantic_map /depth/dense
+rostopic hz /object_detections /object_tracks /semantic_map/labels /depth/dense
 rostopic echo -n1 /object_tracks
 rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase4_perception.rviz
 ```
@@ -183,8 +183,7 @@ rosrun rviz rviz -d $(rospack find adaptive_amr)/rviz/phase4_perception.rviz
 - `/object_detections` at ~10 Hz (CPU-dependent): cars/pedestrians with fused
   depth; `/object_detections/image` annotated.
 - `/object_tracks`: stable IDs across frames (same car keeps its ID).
-- `/semantic_map/colored`: person/car/bike masks; colored_points painted.
-- `/depth/dense`: 32FC1 with coverage > 90% (unlimited fill).
+- `/semantic_map/colored`: person/car/bike masks; colored_points painted.- `/depth/dense`: 32FC1 with coverage > 90% (unlimited fill).
 
 ## 15. Performance metrics (CPU, indicative)
 

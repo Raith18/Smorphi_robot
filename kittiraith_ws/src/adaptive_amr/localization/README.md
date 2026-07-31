@@ -34,13 +34,21 @@ localization/
 `rospy sensor_msgs geometry_msgs nav_msgs tf2_ros diagnostic_msgs
 message_filters dataset_loader lidar_odometry lidar_processing numpy scipy`
 
-## 6-8. ROS topics
+## 6-8. ROS topics & services
 | Topic | Type | Dir |
 |---|---|---|
 | `/localization_pose` | `PoseWithCovarianceStamped` | pub |
 | `/localization/map` | `PointCloud2` | pub (latched) |
 | `/localization/statistics` | `DiagnosticArray` | pub |
 | `/velodyne_points` + `/lidar_odometry` | — | sub |
+
+| Service | Type | Purpose |
+|---|---|---|
+| `/localization/relocalize` | `adaptive_amr_msgs/Relocalize` | Reset map->odom (or restart mapping) after a kidnapping event |
+
+```bash
+rosservice call /localization/relocalize "{restart_mapping: false}"
+```
 
 ## 9. Parameters / 10. Configuration
 `config/localization.yaml`: mapping phase (`voxel_leaf`, `min_map_points`,

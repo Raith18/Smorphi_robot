@@ -60,7 +60,9 @@ class SemanticSegmentationNode:
         self.frames_processed = 0
         self.last_ms = 0.0
 
-        self.pub_labels = rospy.Publisher(self.ns, Image, queue_size=2)
+        # label image lives under /semantic_map/labels; /semantic_map itself is
+        # reserved for the GLOBAL semantic point cloud (Phase 6 semantic_mapping)
+        self.pub_labels = rospy.Publisher(self.ns + "/labels", Image, queue_size=2)
         self.pub_colored = rospy.Publisher(self.ns + "/colored", Image, queue_size=2)
         self.pub_points = rospy.Publisher(self.ns + "/colored_points",
                                           PointCloud2, queue_size=2)
