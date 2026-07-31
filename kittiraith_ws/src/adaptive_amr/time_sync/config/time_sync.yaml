@@ -1,0 +1,11 @@
+# time_sync — private parameters (loaded by time_sync.launch)
+image_topic: /camera/image_raw
+points_topic: /velodyne_points
+imu_topic: /imu/data
+subscribe_gps: true
+gps_topic: /gps/fix
+sync_type: exact          # exact (identical stamps) | approx (within slop)
+queue_size: 20
+approx_slop: 0.05         # seconds, only used for approx
+diagnostics_rate: 1.0     # Hz for /time_sync/statistics
+synced_ns: /time_sync

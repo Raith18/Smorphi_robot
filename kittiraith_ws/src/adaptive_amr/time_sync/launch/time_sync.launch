@@ -1,0 +1,15 @@
+<launch>
+  <!--
+    time_sync.launch — multi-sensor time synchronization node.
+
+    Usage:
+      roslaunch time_sync time_sync.launch
+      roslaunch time_sync time_sync.launch sync_type:=approx   # sloppy clocks
+  -->
+  <arg name="sync_type" default="exact"/>
+
+  <node name="time_sync_node" pkg="time_sync" type="time_sync_node.py" output="screen">
+    <rosparam file="$(find time_sync)/config/time_sync.yaml" command="load"/>
+    <param name="sync_type" value="$(arg sync_type)"/>
+  </node>
+</launch>
