@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>dataset_loader</name>
+  <version>0.1.0</version>
+  <description>dataset_loader: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+</package>
