@@ -14,6 +14,7 @@
   <arg name="date" default="2011_09_26"/>
   <arg name="drive" default="2011_09_26_drive_0005"/>
   <arg name="rate" default="1.0"/>
+  <arg name="publish_rect" default="true"/>
 
   <!-- Camera driver -->
   <include file="$(find camera_node)/launch/camera_node.launch">
@@ -21,6 +22,7 @@
     <arg name="date" value="$(arg date)"/>
     <arg name="drive" value="$(arg drive)"/>
     <arg name="rate" value="$(arg rate)"/>
+    <arg name="publish_rect" value="$(arg publish_rect)"/>
   </include>
 
   <!-- LiDAR driver -->

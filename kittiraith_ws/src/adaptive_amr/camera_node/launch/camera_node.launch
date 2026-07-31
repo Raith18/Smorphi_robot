@@ -12,6 +12,7 @@
   <arg name="drive" default="2011_09_26_drive_0005"/>
   <arg name="rate" default="1.0"/>
   <arg name="camera_index" default="2"/>
+  <arg name="publish_rect" default="true"/>
 
   <node name="camera_node" pkg="camera_node" type="camera_node.py" output="screen">
     <param name="dataset_root" value="$(arg dataset_root)"/>
@@ -19,6 +20,8 @@
     <param name="drive" value="$(arg drive)"/>
     <param name="camera_index" value="$(arg camera_index)"/>
     <rosparam file="$(find camera_node)/config/camera_node.yaml" command="load"/>
+    <!-- overrides must come AFTER the rosparam load to take effect -->
+    <param name="publish_rect_copy" value="$(arg publish_rect)"/>
     <param name="rate_factor" value="$(arg rate)"/>
   </node>
 </launch>

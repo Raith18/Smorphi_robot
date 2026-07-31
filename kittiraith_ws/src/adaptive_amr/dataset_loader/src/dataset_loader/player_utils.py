@@ -95,6 +95,89 @@ def build_point_cloud2_msg(header: Header, bin_bytes: bytes,
     return msg
 
 
+def build_point_cloud2_from_arrays(header: Header,
+                                   arrays: "dict") -> PointCloud2:
+    """
+    Build a PointCloud2 from named float32/int32 arrays (same length).
+
+    `arrays` preserves field order, e.g.:
+        {"x": x, "y": y, "z": z, "intensity": i, "cluster_id": ids}
+    Field datatypes are inferred from the array dtype.
+    """
+    names = list(arrays.keys())
+    if not names:
+        raise ValueError("arrays must contain at least one field")
+    n = None
+    chunks = []
+    offset = 0
+    fields = []
+    for name in names:
+        arr = np.ascontiguousarray(arrays[name])
+        if n is None:
+            n = arr.shape[0]
+        elif arr.shape[0] != n:
+            raise ValueError("field '{}' has {} points, expected {}".format(
+                name, arr.shape[0], n))
+        if arr.dtype == np.float32:
+            datatype = PointField.FLOAT32
+        elif arr.dtype == np.int32:
+            datatype = PointField.INT32
+        elif arr.dtype == np.uint32:
+            datatype = PointField.UINT32
+        elif arr.dtype == np.uint8:
+            datatype = PointField.UINT8
+        else:
+            raise ValueError("unsupported dtype {} for field '{}'".format(arr.dtype, name))
+        fields.append(PointField(name=name, offset=offset, datatype=datatype, count=1))
+        chunks.append(arr.view(np.uint8).reshape(n, -1))
+        offset += arr.dtype.itemsize
+
+    msg = PointCloud2()
+    msg.header = header
+    msg.height = 1
+    msg.width = n
+    msg.fields = fields
+    msg.is_bigendian = False
+    msg.point_step = offset
+    msg.row_step = offset * n
+    msg.data = np.hstack(chunks).tobytes() if chunks else b""
+    msg.is_dense = True
+    return msg
+
+
+def pointcloud2_to_arrays(msg: PointCloud2, names=None) -> "dict":
+    """
+    Extract named fields from a PointCloud2 into numpy float32 arrays.
+    Uses a single structured-dtype view (fast, no per-point copies).
+    """
+    point_step = msg.point_step
+    total = msg.height * msg.width
+    fields = {f.name: f for f in msg.fields}
+    if names is None:
+        names = [f.name for f in msg.fields]
+    formats = []
+    offsets = []
+    itemsize = point_step if point_step else sum(fields[n].offset + 4 for n in names)
+    for name in names:
+        field = fields[name]
+        if field.datatype == PointField.FLOAT32:
+            fmt = "<f4"
+        elif field.datatype in (PointField.INT32, PointField.UINT32):
+            fmt = "<i4"
+        elif field.datatype in (PointField.UINT8, PointField.INT8):
+            fmt = "<u1"
+        elif field.datatype in (PointField.UINT16, PointField.INT16):
+            fmt = "<u2"
+        else:
+            raise ValueError("unsupported PointField datatype {}".format(field.datatype))
+        formats.append(fmt)
+        offsets.append(field.offset)
+    dtype = np.dtype({"names": list(names), "formats": formats,
+                      "offsets": offsets, "itemsize": itemsize})
+    structured = np.frombuffer(msg.data, dtype=dtype, count=total)
+    return {name: structured[name].astype(np.float32) for name in names}
+
+
 def build_imu_msg(header: Header, sample: OxtsSample) -> Imu:
     """
     OXTS sample -> sensor_msgs/Imu.
