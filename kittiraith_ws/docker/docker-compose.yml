@@ -1,0 +1,45 @@
+# =============================================================================
+# kittiraith_ws — docker-compose dev environment
+#
+# Usage:
+#   docker compose -f docker/docker-compose.yml up -d        # start
+#   docker compose -f docker/docker-compose.yml exec dev bash
+#   docker compose -f docker/docker-compose.yml down         # stop
+#
+# Networking: ROS 1 relies on localhost multicast + a shared master, so we use
+# host networking — this is Linux-native and the simplest setup. On Docker
+# Desktop (macOS/Windows) replace `network_mode: host` with port publishing:
+#   ports: ["11311:11311"]
+#
+# GUI (rviz): on Linux, run ./scripts/docker/run_dev_container.sh instead,
+# which forwards X11 automatically. In Docker Desktop use XQuartz / XServer.
+#
+# GPU (Phases 4+): uncomment the runtime lines once nvidia-container-toolkit
+# is installed on the host.
+# =============================================================================
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: kittiraith_ws:noetic
+    container_name: kittiraith_ws_dev
+    network_mode: host
+    ipc: host
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+      - ROS_MASTER_URI=http://localhost:11311
+      # - NVIDIA_VISIBLE_DEVICES=all        # uncomment for GPU phases
+      # - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ..:/home/ros/kittiraith_ws          # live workspace (code edits visible)
+      - kitti_data:/data/kitti              # datasets live in a named volume
+    working_dir: /home/ros/kittiraith_ws
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    # runtime: nvidia                        # uncomment for GPU phases
+
+volumes:
+  kitti_data:

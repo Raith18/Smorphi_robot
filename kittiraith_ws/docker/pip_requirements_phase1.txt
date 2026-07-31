@@ -1,0 +1,16 @@
+# kittiraith_ws — Python 3.8 dependency set (Phase 1)
+# Single source of truth: used by the Docker image AND scripts/02_install_python_deps.sh
+# Upper bounds protect Python 3.8 compatibility (ROS Noetic ships Python 3.8).
+
+numpy>=1.21,<1.25
+scipy>=1.7,<1.11
+matplotlib>=3.4,<3.8
+pandas>=1.3,<2.1
+tqdm>=4.62
+pyyaml>=5.4
+rospkg>=1.3
+defusedxml>=0.7
+
+# --- Phase 4 additions (installed separately, not here) ---
+# torch==1.13.1+cpu            (CPU)   — or CUDA build on GPU hosts
+# torchvision==0.14.1+cpu
