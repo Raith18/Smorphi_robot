@@ -1,61 +1,88 @@
 # object_detection
 
-| Phase | Status |
-|---|---|
-| Implementation | Pending (see phase roadmap in the root README) |
+> **Phase 4 — ✅ implemented**
 
-## Objective
-<!-- Filled in during the implementation phase. -->
+## 1. Objective
+2D object detection with **YOLOv8** fused with LiDAR depth: pixel boxes,
+classes, scores + fused 3D depth/position (frustum fusion).
 
-## Theory
-<!-- Mathematical formulation, algorithms, alternatives. -->
+## 2. Theory
+- YOLOv8: single-stage anchor-free CNN (backbone CSPDarknet → neck PAN-FPN →
+  head predicting boxes/classes per cell). `yolov8n` = nano (3.2M params),
+  CPU-friendly at 10 Hz.
+- Frustum fusion: project the Velodyne cloud into the image (Phase 3 math),
+  take the **median** depth of points inside each box, back-project the box
+  center: `p_laser = T_velo_cam⁻¹ · (depth · K⁻¹ · [u,v,1])`.
 
-## Industrial importance
-<!-- Why warehouse/AMR companies need this module. -->
+## 3. Industrial importance
+YOLO-family detectors are the standard 2D baseline in warehouse AMR stacks —
+cheap, real-time, easily retrained on custom classes. Fused depth turns a
+2D box into a 3D cue for the tracker and the planner.
 
-## Folder structure
+## 4. Folder structure
 ```
 object_detection/
-├── src/          # C++ / Python sources
-├── launch/       # launch files
-├── config/       # YAML parameters
-├── rviz/         # RViz display configs
-└── test/         # unit/integration tests
+├── src/object_detection/detection_utils.py   # pure math (unit-tested)
+├── scripts/object_detection_node.py
+├── launch/object_detection.launch
+├── config/object_detection.yaml
+└── test/test_detection_utils.py              # 13 tests
 ```
 
-## ROS topics (planned)
-<!-- /topic_name  (MsgType)  publisher|subscriber  — description -->
+## 5. Required packages
+`rospy sensor_msgs geometry_msgs tf2_ros message_filters diagnostic_msgs
+dataset_loader sensor_fusion adaptive_amr_msgs
+numpy opencv-python torch torchvision ultralytics` (Phase 4 reqs)
 
-## TF frames (planned)
-<!-- parent -> child  — description -->
+## 6-8. ROS topics
+| Topic | Type | Dir |
+|---|---|---|
+| `/object_detections` | `adaptive_amr_msgs/ObjectDetectionArray` | pub |
+| `/object_detections/image` | `sensor_msgs/Image` | pub (annotated) |
+| `/object_detections/statistics` | `DiagnosticArray` | pub |
+| `/camera/image_rect`, `/velodyne_points`, `/camera/camera_info_rect` | — | sub |
 
-## Parameters (planned)
-<!-- name (type, default) — description -->
+## 9. Parameters / 10. Configuration
+`config/object_detection.yaml`: `model (yolov8n.pt)`, `conf_threshold`,
+`imgsz`, `device (cpu|auto)`, `max_det`, `target_classes`, topics.
 
-## Launch (planned)
+## 11. Python classes
+`detection_utils`: `clip_box`, `box_iou`, `box_center`, `points_in_box`,
+`median_depth_in_box`, `backproject_to_laser`, COCO/KITTI class maps.
+
+## 12. Launch
 ```bash
 roslaunch object_detection object_detection.launch
 ```
 
-## Testing procedure
-<!-- How to verify the module on KITTI data. -->
-
-## Expected outputs
-<!-- Topics/plots/metrics to expect. -->
-
-## Performance metrics
-<!-- Latency, throughput, accuracy, resource usage. -->
-
-## Debugging guide
-<!-- rqt_graph, rostopic, rosbag, gdb... -->
-
-## Common errors
-<!-- Symptom -> cause -> fix. -->
-
-## Improvements
-<!-- Future work. -->
-
-## Git commit message (suggested)
+## 13. Testing procedure
+```bash
+python3 src/adaptive_amr/object_detection/test/test_detection_utils.py
+# live:
+rostopic hz /object_detections
+rostopic echo -n1 /object_detections
 ```
-feat(object_detection): <what was implemented>
-```
+
+## 14. RViz configuration
+`adaptive_amr/rviz/phase4_perception.rviz`.
+
+## 15. Expected outputs
+10 Hz detections with `label/score/bbox/depth/position`; annotated image.
+
+## 16. Performance metrics
+YOLOv8n @640px CPU: 60-150 ms; frustum fusion < 2 ms.
+
+## 17. Debugging guide
+No detections → `conf_threshold` too high, or `target_classes` excludes
+everything; check `/object_detections/image`.
+
+## 18. Common errors
+`ultralytics missing` → install `pip_requirements_phase4.txt` (CPU index);
+model download needs internet on first run.
+
+## 19. Improvements
+ONNX/OpenVINO export (2× CPU speed), ByteTrack-compatible output, class-aware
+NMS, multi-camera fusion.
+
+## 20. Git commit
+`feat(object_detection): add YOLOv8 detection with LiDAR frustum fusion`

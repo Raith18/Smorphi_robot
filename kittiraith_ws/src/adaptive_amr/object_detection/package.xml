@@ -2,11 +2,26 @@
 <package format="2">
   <name>object_detection</name>
   <version>0.1.0</version>
-  <description>object_detection: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    2D object detection with YOLOv8 (ultralytics) fused with LiDAR depth:
+    publishes adaptive_amr_msgs/ObjectDetectionArray with pixel bounding boxes,
+    class labels, scores, and fused 3D depth/position from the projected
+    Velodyne cloud (frustum fusion). CPU-friendly (yolov8n).
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>message_filters</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>dataset_loader</depend>
+  <depend>adaptive_amr_msgs</depend>
+  <depend>sensor_fusion</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 </package>

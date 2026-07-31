@@ -1,0 +1,23 @@
+# object_detection — private parameters (loaded by object_detection.launch)
+image_topic: /camera/image_rect
+points_topic: /velodyne_points
+camera_info_topic: /camera/camera_info_rect
+sync_type: exact            # exact | approx
+queue_size: 20
+approx_slop: 0.05
+
+model: yolov8n.pt            # YOLOv8 nano — smallest/fastest (CPU-friendly)
+conf_threshold: 0.35
+imgsz: 640
+device: cpu                  # cpu | auto | cuda:0  (auto = CUDA if available)
+max_det: 30
+target_classes: [person, bicycle, car, motorcycle, bus, truck, traffic light, stop sign]
+
+publish_image: true
+output_ns: /object_detections
+max_projection_distance: 120.0
+diagnostics_rate: 1.0
+
+dataset_root: /data/kitti    # fallback calibration source (when TF unavailable)
+date: "2011_09_26"
+drive: "2011_09_26_drive_0005"

@@ -1,0 +1,24 @@
+<launch>
+  <!--
+    object_detection.launch — YOLOv8 detection + LiDAR frustum fusion.
+
+    Usage:
+      roslaunch object_detection object_detection.launch
+      roslaunch object_detection object_detection.launch model:=yolov8s.pt
+      roslaunch object_detection object_detection.launch device:=cpu
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="sync_type" default="exact"/>
+
+  <node name="object_detection_node" pkg="object_detection"
+        type="object_detection_node.py" output="screen">
+    <rosparam file="$(find object_detection)/config/object_detection.yaml"
+              command="load"/>
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <param name="sync_type" value="$(arg sync_type)"/>
+  </node>
+</launch>
