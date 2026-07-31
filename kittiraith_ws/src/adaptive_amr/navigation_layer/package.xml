@@ -2,11 +2,24 @@
 <package format="2">
   <name>navigation_layer</name>
   <version>0.1.0</version>
-  <description>navigation_layer: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    Navigation, behavior and decision layers: costmap inflation (Euclidean
+    distance transform), A* grid path planning, and a safety state machine
+    (NAVIGATE/AVOID/STOP/RESUME) that gates the velocity command. Publishes
+    /navigation_costmap, /planned_path, /behavior/state and
+    /behavior/velocity_command. CPU-friendly pure NumPy/SciPy.
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>adaptive_amr_msgs</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
 </package>

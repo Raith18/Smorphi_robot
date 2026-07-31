@@ -18,6 +18,7 @@ add_message_files(
 add_service_files(
   FILES
   Relocalize.srv
+  SetGoal.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

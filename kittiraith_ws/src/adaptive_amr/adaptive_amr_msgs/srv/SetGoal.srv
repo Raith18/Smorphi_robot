@@ -1,0 +1,5 @@
+# SetGoal.srv — set the navigation goal for the planning/behavior layers
+geometry_msgs/PoseStamped goal
+---
+bool success              # true if the goal was accepted
+string message            # human-readable status

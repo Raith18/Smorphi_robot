@@ -1,0 +1,15 @@
+# navigation_layer — private parameters (loaded by navigation_layer.launch)
+occupancy_topic: /occupancy_grid
+obstacles_topic: /dynamic_obstacles
+goal_topic: /goal
+costmap_topic: /navigation_costmap
+path_topic: /planned_path
+map_frame: map
+base_frame: base_link
+
+inflation_radius: 1.0        # cost decay radius [m] (robot clearance)
+lethal_threshold: 50
+unknown_penalty: 0.5         # A* cost factor for unknown cells
+plan_interval: 1.0           # s between replans
+
+diagnostics_rate: 1.0

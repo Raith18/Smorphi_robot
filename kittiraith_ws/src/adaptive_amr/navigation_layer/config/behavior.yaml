@@ -1,0 +1,13 @@
+# behavior — private parameters (loaded by behavior.launch)
+obstacles_topic: /dynamic_obstacles
+pose_topic: /localization_pose
+path_topic: /planned_path
+goal_topic: /goal
+
+risk_stop: 0.8               # collision risk -> STOP
+risk_avoid: 0.4              # collision risk -> AVOID
+goal_tolerance: 1.0          # m to consider the goal reached
+cruise_speed: 0.5            # m/s nominal
+kp_angular: 1.0              # angular P gain on heading error
+control_rate: 10.0           # Hz of the decision loop
+diagnostics_rate: 1.0

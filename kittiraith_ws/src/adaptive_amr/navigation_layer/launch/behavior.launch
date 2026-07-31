@@ -1,0 +1,13 @@
+<launch>
+  <!--
+    behavior.launch — safety behavior & decision node.
+
+    Usage:
+      roslaunch navigation_layer behavior.launch
+  -->
+  <node name="behavior_node" pkg="navigation_layer"
+        type="behavior_node.py" output="screen">
+    <rosparam file="$(find navigation_layer)/config/behavior.yaml"
+              command="load"/>
+  </node>
+</launch>

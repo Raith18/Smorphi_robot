@@ -1,0 +1,20 @@
+<launch>
+  <!--
+    navigation_layer.launch — costmap + A* planning node.
+
+    Usage:
+      roslaunch navigation_layer navigation_layer.launch
+      # set a goal:
+      rostopic pub /goal geometry_msgs/PoseStamped \
+        "{header: {frame_id: map}, pose: {position: {x: 10, y: 0, z: 0}, \
+         orientation: {w: 1}}}"
+      # or via service:
+      rosservice call /navigation_layer/set_goal "{goal: {header: {frame_id: map}, \
+        pose: {position: {x: 10, y: 0, z: 0}}}}"
+  -->
+  <node name="navigation_layer_node" pkg="navigation_layer"
+        type="navigation_layer_node.py" output="screen">
+    <rosparam file="$(find navigation_layer)/config/navigation_layer.yaml"
+              command="load"/>
+  </node>
+</launch>
