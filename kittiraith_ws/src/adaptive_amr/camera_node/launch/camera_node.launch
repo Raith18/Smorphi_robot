@@ -1,0 +1,24 @@
+<launch>
+  <!--
+    camera_node.launch — KITTI camera driver.
+
+    Usage:
+      roslaunch camera_node camera_node.launch
+      roslaunch camera_node camera_node.launch camera_index:=0   # grayscale left
+      roslaunch camera_node camera_node.launch rate:=0           # fast replay
+  -->
+  <arg name="dataset_root" default="$(env KITTI_ROOT, /data/kitti)"/>
+  <arg name="date" default="2011_09_26"/>
+  <arg name="drive" default="2011_09_26_drive_0005"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="camera_index" default="2"/>
+
+  <node name="camera_node" pkg="camera_node" type="camera_node.py" output="screen">
+    <param name="dataset_root" value="$(arg dataset_root)"/>
+    <param name="date" value="$(arg date)"/>
+    <param name="drive" value="$(arg drive)"/>
+    <param name="camera_index" value="$(arg camera_index)"/>
+    <rosparam file="$(find camera_node)/config/camera_node.yaml" command="load"/>
+    <param name="rate_factor" value="$(arg rate)"/>
+  </node>
+</launch>

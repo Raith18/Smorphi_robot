@@ -2,11 +2,20 @@
 <package format="2">
   <name>camera_node</name>
   <version>0.1.0</version>
-  <description>camera_node: module of the adaptive_amr perception &amp; autonomy stack (KITTI / ROS Noetic). Skeleton — implementation added in its phase.</description>
+  <description>
+    Camera driver node: replays KITTI image sequences as ROS image topics
+    (/camera/image_raw, /camera/image_rect) with exact KITTI timestamps.
+    In a real robot this package would wrap a physical camera driver; here it
+    wraps the KITTI dataset (dataset_loader parsers).
+  </description>
   <maintainer email="186810016+Raith18@users.noreply.github.com">Raith18</maintainer>
   <license>MIT</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>dataset_loader</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 </package>

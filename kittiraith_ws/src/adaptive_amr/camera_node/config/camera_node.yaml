@@ -1,0 +1,9 @@
+# camera_node — private parameters (loaded by camera_node.launch)
+image_topic: /camera/image_raw
+rect_topic: /camera/image_rect
+camera_index: 2
+frame_id: camera_optical_frame
+encoding: image            # image -> sensor_msgs/Image (needs OpenCV); compressed -> CompressedImage
+publish_rect_copy: true    # KITTI _sync images are already rectified
+rate_factor: 1.0           # 1.0 real time, >1 faster, 0 = as fast as possible
+loop: false
